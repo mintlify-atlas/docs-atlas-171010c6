@@ -1,0 +1,101 @@
+{
+  "projectType": "general",
+  "projectName": "Market Research",
+  "projectDescription": "A comprehensive marketing research toolkit featuring website audit capabilities and behavioral psychology frameworks for optimizing conversion and user experience.",
+  "theme": "aspen",
+  "primaryColor": "#2563eb",
+  "lightColor": "#3b82f6",
+  "darkColor": "#1e40af",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "quickstart"
+            ]
+          },
+          {
+            "group": "Website Auditing",
+            "pages": [
+              "auditing/overview",
+              "auditing/installation",
+              "auditing/running-audits",
+              "auditing/audit-categories",
+              "auditing/interpreting-results"
+            ]
+          },
+          {
+            "group": "Marketing Psychology",
+            "pages": [
+              "psychology/overview",
+              "psychology/foundational-models",
+              "psychology/buyer-behavior",
+              "psychology/persuasion-techniques",
+              "psychology/pricing-psychology"
+            ]
+          },
+          {
+            "group": "Skills & Integration",
+            "pages": [
+              "skills/overview",
+              "skills/audit-website-skill",
+              "skills/marketing-psychology-skill"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Reference",
+        "groups": [
+          {
+            "group": "Audit Rules",
+            "pages": [
+              "reference/rules/core-seo",
+              "reference/rules/technical-seo",
+              "reference/rules/performance",
+              "reference/rules/security",
+              "reference/rules/accessibility",
+              "reference/rules/content"
+            ]
+          },
+          {
+            "group": "Mental Models",
+            "pages": [
+              "reference/mental-models/thinking-frameworks",
+              "reference/mental-models/behavioral-psychology",
+              "reference/mental-models/growth-models"
+            ]
+          },
+          {
+            "group": "Examples",
+            "pages": [
+              "reference/examples/audit-reports",
+              "reference/examples/psychology-analysis",
+              "reference/examples/combined-approach"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Comprehensive website auditing with 230+ rules across 21 categories",
+    "Marketing psychology framework with 70+ mental models",
+    "Combined technical + behavioral analysis approach",
+    "AI agent skills for automated website optimization",
+    "SEO, performance, security, and accessibility analysis",
+    "Behavioral science-based conversion optimization"
+  ],
+  "publicApiSurface": [
+    "audit-website skill - Website auditing with squirrelscan CLI",
+    "marketing-psychology skill - Behavioral psychology framework",
+    "squirrel audit command - Run website audits",
+    "squirrel report command - Generate audit reports",
+    "Mental models reference - 70+ thinking frameworks",
+    "Audit rules reference - 230+ validation rules"
+  ]
+}
