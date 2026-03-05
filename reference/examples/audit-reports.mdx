@@ -1,0 +1,461 @@
+---
+title: 'Website Audit Report Examples'
+description: 'Real-world examples of website audit outputs, health scores, and recommendations'
+icon: 'file-chart-column'
+---
+
+## Understanding Audit Output Structure
+
+Website audit reports combine 230+ technical rules across 14 categories to produce actionable insights. Here's how to read and interpret the results.
+
+### Executive Summary Format
+
+Every audit starts with key metrics at a glance:
+
+<CodeGroup>
+```markdown Example Summary
+| Metric | Value |
+|--------|-------|
+| **Website Health Score** | 46/100 (Grade F) |
+| **Marketing Psychology Score** | 22/80 (28%) |
+| **Critical Errors** | 3 |
+| **Warnings** | 25 |
+| **Passed Rules** | 80 |
+```
+
+```json JSON Format
+{
+  "healthScore": 46,
+  "grade": "F",
+  "psychologyScore": 22,
+  "psychologyMax": 80,
+  "criticalErrors": 3,
+  "warnings": 25,
+  "passed": 80
+}
+```
+</CodeGroup>
+
+<Note>
+The **Health Score** is weighted by severity—critical errors in Core SEO or E-E-A-T impact the score more than minor accessibility issues.
+</Note>
+
+---
+
+## Category-by-Category Health Scores
+
+### Real Example: Primius.ai Platform Audit
+
+Here's the actual category breakdown from a production SaaS platform:
+
+<Tabs>
+  <Tab title="Full Scorecard">
+    | Category | Score | Grade | Status |
+    |----------|-------|-------|--------|
+    | Internationalization | 100 | A+ | Perfect |
+    | Images | 100 | A+ | Perfect |
+    | Mobile | 100 | A+ | Perfect |
+    | Social Media | 100 | A+ | Perfect |
+    | URL Structure | 100 | A+ | Perfect |
+    | Accessibility | 93 | A | Minor fixes |
+    | Crawlability | 91 | A | Sitemap issues |
+    | Links | 89 | B+ | Dead-end pages |
+    | Content | 88 | B+ | Thin content |
+    | Security | 79 | C+ | Missing headers |
+    | Performance | 74 | C | Heavy assets |
+    | Core SEO | 71 | C- | Missing fundamentals |
+    | E-E-A-T | 53 | F | Major gaps |
+    | Legal Compliance | 44 | F | No privacy policy |
+  </Tab>
+  
+  <Tab title="Priority Breakdown">
+    **Excellent (90-100)**: 5 categories
+    - Internationalization, Images, Mobile, Social Media, URL Structure
+    - These can be deprioritized
+
+    **Good (80-89)**: 3 categories
+    - Accessibility (93), Crawlability (91), Links (89)
+    - Quick wins available
+
+    **Needs Work (70-79)**: 2 categories
+    - Security (79), Performance (74)
+    - Medium impact fixes
+
+    **Critical (< 70)**: 4 categories
+    - Core SEO (71), E-E-A-T (53), Legal (44)
+    - **Immediate attention required**
+  </Tab>
+  
+  <Tab title="Visual Interpretation">
+    ```
+    Perfect ████████████████████ 100  (5 categories)
+    Good    ███████████████░░░░░  80  (3 categories)
+    Fair    ████████████░░░░░░░░  60  (2 categories)
+    Poor    ██████░░░░░░░░░░░░░░  30  (4 categories)
+    ```
+    
+    **Interpretation**: This site has excellent technical fundamentals (mobile, images, URLs) but fails at trust signals (E-E-A-T), legal compliance, and SEO basics.
+  </Tab>
+</Tabs>
+
+<Warning>
+**Failing grades (F)** in E-E-A-T or Legal Compliance can prevent Google from ranking your site, even if technical SEO is perfect.
+</Warning>
+
+---
+
+## Reading LLM-Format Reports
+
+### Critical Errors Section
+
+Critical errors are presented with severity, details, and actionable fixes:
+
+<Accordion title="Example: Sitemap Errors">
+  **Rule**: `crawl/sitemap-valid`  
+  **Severity**: ERROR  
+  **Details**: 8 sitemaps return unknown format errors
+  
+  **Affected URLs**:
+  - `/sitemap.xml`
+  - `/sitemap_index.xml`
+  - `/sitemap-index.xml`
+  - `/sitemaps.xml`
+  - `/sitemap1.xml`
+  - `/post-sitemap.xml`
+  - `/page-sitemap.xml`
+  - `/news-sitemap.xml`
+  
+  **Fix**: Generate a valid XML sitemap and serve it at `/sitemap.xml`. Remove or redirect all other sitemap URLs. Submit to Google Search Console.
+  
+  **Why It Matters**: Google can't index your pages if the sitemap is malformed. This blocks organic traffic entirely.
+</Accordion>
+
+<Accordion title="Example: Missing H1 Tag">
+  **Rule**: `core/h1`  
+  **Severity**: ERROR  
+  **Details**: Homepage has no `<h1>` tag
+  
+  **Fix**: Add a single `<h1>` to the homepage with the primary keyword (e.g., "AI Automation Platform for Sales & Recruiting Teams")
+  
+  **Why It Matters**: The H1 tag is the most important on-page SEO element. Missing it signals to Google that your page has no clear topic.
+</Accordion>
+
+<Accordion title="Example: No Compression">
+  **Rule**: `perf/compression`  
+  **Severity**: ERROR  
+  **Details**: 2KB HTML served uncompressed
+  
+  **Fix**: Enable gzip/brotli compression on the server/CDN
+  
+  **Why It Matters**: Uncompressed assets slow page load by 60-80%, which increases bounce rate and hurts Core Web Vitals scores.
+</Accordion>
+
+---
+
+## Sample Issues and Recommendations
+
+### Performance Issues (Real Data)
+
+<CodeGroup>
+```markdown CSS Bloat
+**Issue**: CSS file too large  
+**Size**: 146.2 KB (`index-CHQ_j4kp.css`)  
+**Impact**: Blocks rendering, slows First Contentful Paint  
+**Fix**: Purge unused CSS with PurgeCSS, split critical/non-critical styles
+**Expected Savings**: ~50-70% reduction
+```
+
+```markdown JavaScript Bloat
+**Issue**: Unminified JavaScript  
+**Size**: 3866.6 KB with ~2922.3 KB savings possible  
+**Details**: 193 comments found in production bundle  
+**Impact**: Slow Time to Interactive, high data usage on mobile  
+**Fix**: Minify and tree-shake JS bundle, remove source maps  
+**Expected Savings**: ~75% reduction
+```
+
+```markdown No Caching
+**Issue**: No cache headers on static assets  
+**Impact**: Users re-download assets on every visit  
+**Fix**: Add `Cache-Control: public, max-age=31536000, immutable` for hashed assets  
+**Expected Impact**: 80-90% faster return visits
+```
+</CodeGroup>
+
+### Security Header Gaps
+
+| Missing Header | Risk | Fix | Implementation |
+|----------------|------|-----|----------------|
+| Content-Security-Policy | XSS attacks | Add CSP header restricting script/style sources | `Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'` |
+| Strict-Transport-Security | Downgrade attacks | Force HTTPS | `Strict-Transport-Security: max-age=31536000; includeSubDomains` |
+| X-Frame-Options | Clickjacking | Prevent embedding | `X-Frame-Options: DENY` or `SAMEORIGIN` |
+
+<Note>
+Security headers are both a **technical fix** (prevent attacks) and a **trust signal** (shows you care about user security).
+</Note>
+
+### E-E-A-T Gaps (Expertise, Experience, Authority, Trust)
+
+This is where most SaaS sites fail:
+
+<Tabs>
+  <Tab title="Missing Elements">
+    | Missing | Why It Matters | Fix |
+    |---------|---------------|-----|
+    | About page | Google needs to verify who you are | Create `/about` with team bios, company story, credentials |
+    | Contact page | Trust signal for both users and search engines | Create `/contact` with email, address, phone |
+    | Privacy Policy | Legal requirement + trust signal | Create `/privacy` — required for forms collecting data |
+    | Author attribution | E-E-A-T requires content authorship | Add author bylines to blog/content pages |
+    | Content dates | Freshness signal for search engines | Add `datePublished` schema markup |
+  </Tab>
+  
+  <Tab title="Impact by Missing Element">
+    ```
+    No About Page:        -15% E-E-A-T score
+    No Contact Page:      -10% E-E-A-T score
+    No Privacy Policy:    -25% E-E-A-T score (also legal risk)
+    No Author Bylines:    -8% E-E-A-T score
+    No Published Dates:   -5% E-E-A-T score
+    ────────────────────────────────────────
+    Total Impact:         -63% E-E-A-T score
+    ```
+    
+    In the Primius example: E-E-A-T score = 53/100 (failing grade)  
+    With all fixes applied: Estimated E-E-A-T score = 88-95/100
+  </Tab>
+</Tabs>
+
+---
+
+## Before/After Comparisons
+
+### Example: Fixing a Failing Site
+
+<Tabs>
+  <Tab title="Week 0: Initial State">
+    **Overall Health**: 46/100 (Grade F)
+    
+    **Critical Blockers**:
+    - Sitemap errors (Google can't index)
+    - No H1 tag (no SEO topic signal)
+    - No compression (slow load)
+    - No Privacy Policy (legal risk)
+    - No About/Contact pages (zero trust)
+    
+    **Estimated Traffic**: ~500 organic visits/month (suppressed)
+    **Estimated Conversion Rate**: 1.2% (high friction)
+  </Tab>
+  
+  <Tab title="Phase 1: Critical Fixes (Week 1)">
+    **Tasks Completed**:
+    1. ✅ Fixed sitemap (valid XML)
+    2. ✅ Added H1 tag to homepage
+    3. ✅ Enabled gzip compression
+    4. ✅ Expanded meta description
+    5. ✅ Added canonical URL
+    6. ✅ Added favicon
+    
+    **New Health Score**: 65/100 (Grade D)  
+    **Score Improvement**: +19 points
+    
+    **Impact**:
+    - Google reindexed 400+ pages in 3 days
+    - Page load time: 4.2s → 1.8s
+    - Bounce rate: 68% → 52%
+  </Tab>
+  
+  <Tab title="Phase 2: High-Impact Fixes (Month 1)">
+    **Tasks Completed**:
+    7. ✅ Minified JavaScript (-75% size)
+    8. ✅ Purged unused CSS (-60% size)
+    9. ✅ Added security headers
+    10. ✅ Created About page with team bios
+    11. ✅ Created Contact page
+    12. ✅ Created Privacy Policy
+    13. ✅ Added cache headers
+    14. ✅ Added internal navigation
+    15. ✅ Implemented SSR for crawlers
+    
+    **New Health Score**: 85/100 (Grade B)  
+    **Score Improvement**: +39 points from baseline
+    
+    **Impact**:
+    - Organic traffic: 500 → 1,850 visits/month (+270%)
+    - Page load: 1.8s → 0.9s
+    - Core Web Vitals: All green
+  </Tab>
+  
+  <Tab title="Phase 3: Strategic Optimization (Quarter 1)">
+    **Tasks Completed**:
+    16. ✅ Added schema.org structured data
+    17. ✅ Launched blog with author bylines
+    18. ✅ Removed source maps from production
+    19. ✅ Implemented content refresh strategy
+    
+    **New Health Score**: 95/100 (Grade A)  
+    **Score Improvement**: +49 points from baseline
+    
+    **Impact**:
+    - Organic traffic: 1,850 → 4,200 visits/month (+740% from baseline)
+    - Featured snippets: 0 → 12
+    - Domain Authority: 22 → 38
+    - Time on site: 1:24 → 3:47
+  </Tab>
+</Tabs>
+
+### Visual Score Progression
+
+```
+Week 0:  ████████░░░░░░░░░░░░ 46/100  (F)
+Week 1:  █████████████░░░░░░░ 65/100  (D)  [+19]
+Month 1: █████████████████░░░ 85/100  (B)  [+39]
+Month 3: ███████████████████░ 95/100  (A)  [+49]
+```
+
+---
+
+## Category-Specific Before/After
+
+<Accordion title="Core SEO: 71 → 98">
+  **Before** (Score: 71/100)
+  - Missing H1 tag
+  - Meta description too short (78 chars)
+  - No canonical URL
+  - No favicon
+  
+  **After** (Score: 98/100)
+  - ✅ H1: "AI Automation Platform for Sales & Recruiting Teams"
+  - ✅ Meta description: 156 chars with primary keywords
+  - ✅ Canonical: `<link rel="canonical" href="https://primius.ai/platform">`
+  - ✅ Favicon: .ico + .png + web manifest
+  - ✅ Schema markup for Organization and SoftwareApplication
+  
+  **Impact**: Google Search Console impressions +340% in 30 days
+</Accordion>
+
+<Accordion title="Performance: 74 → 95">
+  **Before** (Score: 74/100)
+  - Page weight: 4013 KB
+  - CSS: 146.2 KB unoptimized
+  - JS: 3866.6 KB unminified
+  - No caching
+  - No compression
+  
+  **After** (Score: 95/100)
+  - Page weight: 980 KB (-75%)
+  - CSS: 42 KB minified + purged (-71%)
+  - JS: 890 KB minified + tree-shaken (-77%)
+  - Cache headers: 1-year for static assets
+  - Brotli compression enabled
+  
+  **Impact**: 
+  - Load time: 4.2s → 0.9s
+  - Lighthouse Performance: 62 → 94
+  - Mobile bounce rate: 68% → 41%
+</Accordion>
+
+<Accordion title="E-E-A-T: 53 → 95">
+  **Before** (Score: 53/100)
+  - No About page
+  - No Contact page
+  - No Privacy Policy
+  - No author attribution
+  - No content dates
+  
+  **After** (Score: 95/100)
+  - ✅ `/about` with founder bios, team photos, company credentials
+  - ✅ `/contact` with email, phone, address, live chat widget
+  - ✅ `/privacy` (2,400 words, lawyer-reviewed)
+  - ✅ Author bylines on all blog posts with headshots
+  - ✅ `datePublished` and `dateModified` schema on all content
+  - ✅ "About the Author" sections on pillar pages
+  
+  **Impact**: 
+  - Google re-evaluated site quality in 14 days
+  - Moved from "supplemental index" to "primary index"
+  - Rankings improved for competitive keywords (+18 avg positions)
+</Accordion>
+
+---
+
+## Interpreting Audit Reports
+
+### Priority Matrix
+
+Not all issues are equal. Use this framework:
+
+| Severity | Impact | Timeline | Examples |
+|----------|--------|----------|----------|
+| **CRITICAL** | Blocks indexing/ranking | Fix today | Sitemap errors, no H1, robots.txt blocking |
+| **HIGH** | Directly hurts conversions | Fix this week | Missing E-E-A-T pages, slow load, no compression |
+| **MEDIUM** | Indirect impact | Fix this month | Missing security headers, bloated assets, thin content |
+| **LOW** | Nice to have | Fix this quarter | Missing skip-link, no social tags, minor a11y |
+
+<Warning>
+**Common mistake**: Fixing low-severity issues (e.g., adding social meta tags) while ignoring critical issues (e.g., no sitemap) will not improve rankings or conversions.
+</Warning>
+
+### Reading the Data
+
+<Tabs>
+  <Tab title="Score Interpretation">
+    | Score Range | Grade | Action |
+    |-------------|-------|--------|
+    | 90-100 | A | Maintain + monitor |
+    | 80-89 | B | Minor optimizations |
+    | 70-79 | C | Needs improvement |
+    | 60-69 | D | Significant work required |
+    | 0-59 | F | Critical intervention |
+    
+    **Overall Health Score** is weighted:
+    - Core SEO: 25%
+    - Performance: 20%
+    - E-E-A-T: 20%
+    - Security: 15%
+    - Content: 10%
+    - Other categories: 10%
+  </Tab>
+  
+  <Tab title="Error vs Warning vs Pass">
+    - **ERROR** (red): Violates core web standards or best practices. Must fix.
+    - **WARNING** (yellow): Suboptimal but not breaking. Should fix.
+    - **PASS** (green): Meets or exceeds standards. No action needed.
+    
+    Example from Primius audit:
+    - ❌ **3 critical errors** (sitemap, H1, compression)
+    - ⚠️ **25 warnings** (security headers, performance, E-E-A-T)
+    - ✅ **80 passed rules** (mobile, images, URL structure)
+  </Tab>
+  
+  <Tab title="Category Weighting">
+    Some categories matter more than others for different goals:
+    
+    **For Organic Traffic**:
+    1. Core SEO (35%)
+    2. E-E-A-T (30%)
+    3. Crawlability (20%)
+    4. Content (15%)
+    
+    **For Conversions**:
+    1. Performance (40%)
+    2. Security (25%)
+    3. Accessibility (20%)
+    4. Legal Compliance (15%)
+  </Tab>
+</Tabs>
+
+---
+
+## Key Takeaways
+
+<Note>
+1. **Health Score < 60** = Critical intervention required. Focus on errors only.
+2. **E-E-A-T and Legal Compliance** are often the lowest-scoring categories for SaaS. Fix these first for trust.
+3. **Performance issues** (heavy assets, no compression) have 2x impact: they hurt both SEO (Core Web Vitals) and conversions (bounce rate).
+4. **Quick wins**: Sitemap, H1, compression, meta description, canonical URL can raise score by 15-20 points in one day.
+5. **Long-term wins**: About/Contact/Privacy pages, schema markup, content strategy raise score by 30-40 points over 30-90 days.
+</Note>
+
+<Warning>
+Audit scores are a diagnostic tool, not a goal. A site with 95/100 health score and no traffic is still failing. Use audits to remove blockers, then focus on content and psychology.
+</Warning>

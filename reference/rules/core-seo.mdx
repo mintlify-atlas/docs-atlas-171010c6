@@ -1,0 +1,338 @@
+---
+title: "Core SEO Rules"
+description: "Reference guide for core SEO audit rules including title tags, meta descriptions, headings, and canonical URLs"
+---
+
+## Overview
+
+Core SEO rules cover the fundamental on-page SEO elements that search engines use to understand and rank your content. These are the baseline requirements for any page that should rank in search results.
+
+## Title Tags
+
+### Rule: `core/title`
+
+**What it checks:**
+- Title tag presence
+- Title length (50-60 characters optimal)
+- Uniqueness across pages
+- Keyword placement
+
+**Why it matters:**
+Title tags are one of the most important on-page SEO factors. They appear in search results and browser tabs, directly influencing click-through rates.
+
+<Accordion title="Common Issues">
+- **Missing title tag**: Page has no `<title>` element
+- **Title too short**: Less than 30 characters (under-optimized)
+- **Title too long**: Over 60 characters (gets truncated in SERPs)
+- **Duplicate titles**: Multiple pages share the same title
+- **Keywords missing**: Primary keyword not in title
+</Accordion>
+
+<Accordion title="How to Fix">
+```html
+<!-- ❌ Bad: Too short, no keywords -->
+<title>Home</title>
+
+<!-- ✅ Good: Descriptive, keyword-rich, optimal length -->
+<title>AI Automation Platform for Sales & Recruiting Teams | PrimePlus</title>
+```
+
+**Best practices:**
+- Place primary keyword near the beginning
+- Include brand name (usually at the end)
+- Keep it between 50-60 characters
+- Make it unique for every page
+- Write for users first, search engines second
+</Accordion>
+
+## Meta Descriptions
+
+### Rule: `core/meta-description`
+
+**What it checks:**
+- Meta description presence
+- Length (120-160 characters optimal)
+- Keyword usage
+- Uniqueness
+
+**Why it matters:**
+Meta descriptions don't directly impact rankings, but they heavily influence click-through rates from search results. A compelling description can significantly increase organic traffic.
+
+<Accordion title="Common Issues">
+- **Missing description**: No meta description tag
+- **Too short**: Under 120 characters (wasted opportunity)
+- **Too long**: Over 160 characters (gets truncated)
+- **Duplicate descriptions**: Same description across multiple pages
+- **Not compelling**: Doesn't entice clicks
+</Accordion>
+
+<Accordion title="How to Fix">
+```html
+<!-- ❌ Bad: Too short (78 chars) -->
+<meta name="description" content="Automate repetition. Accelerate growth.">
+
+<!-- ✅ Good: Descriptive, compelling, optimal length (158 chars) -->
+<meta name="description" content="Join 2,400+ teams using AI to automate lead discovery, outreach, and CRM tasks. Save 15+ hours weekly with intelligent RPA and agentic workflows. Start free.">
+```
+
+**Best practices:**
+- Aim for 150-160 characters
+- Include primary keyword naturally
+- Make it actionable and benefit-focused
+- Unique for every page
+- Include a call-to-action when appropriate
+</Accordion>
+
+## H1 Headings
+
+### Rule: `core/h1`
+
+**What it checks:**
+- H1 tag presence
+- Single H1 per page (not multiple)
+- H1 contains keywords
+- H1 is descriptive
+
+**Why it matters:**
+The H1 is the main heading that tells both users and search engines what the page is about. It should be the most prominent text element on the page.
+
+<Accordion title="Common Issues">
+- **Missing H1**: Page has no `<h1>` tag (critical error)
+- **Multiple H1s**: Page has more than one H1 (confusing hierarchy)
+- **Empty H1**: H1 exists but contains no text
+- **Generic H1**: "Home", "Welcome", etc. (not descriptive)
+</Accordion>
+
+<Accordion title="How to Fix">
+```html
+<!-- ❌ Bad: Missing H1 -->
+<div class="hero-title">Welcome to Our Platform</div>
+
+<!-- ✅ Good: Single H1 with keywords -->
+<h1>AI Automation Platform for Sales & Recruiting Teams</h1>
+```
+
+**Best practices:**
+- One H1 per page
+- Include primary keyword
+- Make it descriptive and specific
+- Should match or complement the title tag
+- Don't duplicate the title verbatim
+</Accordion>
+
+## Canonical URLs
+
+### Rule: `core/canonical`
+
+**What it checks:**
+- Canonical link tag presence
+- Points to correct URL
+- No conflicting canonicals
+- Self-referencing when appropriate
+
+**Why it matters:**
+Canonical tags prevent duplicate content issues by telling search engines which version of a page is the "main" one.
+
+<Accordion title="Common Issues">
+- **Missing canonical**: No `<link rel="canonical">` tag
+- **Wrong URL**: Canonical points to incorrect page
+- **Relative URLs**: Should be absolute URLs
+- **Chain canonicals**: Page A → Page B → Page C (should be direct)
+</Accordion>
+
+<Accordion title="How to Fix">
+```html
+<!-- ❌ Bad: Missing canonical tag -->
+<head>
+  <title>Product Page</title>
+</head>
+
+<!-- ❌ Bad: Relative URL -->
+<link rel="canonical" href="/products/item">
+
+<!-- ✅ Good: Self-referencing canonical with absolute URL -->
+<link rel="canonical" href="https://example.com/products/item">
+```
+
+**Best practices:**
+- Always use absolute URLs (full domain + path)
+- Self-reference on original pages
+- Point to original on duplicate/similar pages
+- Use HTTPS in canonical URLs
+- Ensure the canonical URL is indexable
+</Accordion>
+
+## Favicon
+
+### Rule: `core/favicon`
+
+**What it checks:**
+- Favicon presence
+- Multiple formats (ICO, PNG, SVG)
+- Correct sizes (16x16, 32x32, 180x180)
+- Web manifest for PWA
+
+**Why it matters:**
+Favicons appear in browser tabs, bookmarks, and mobile home screens. They're essential for brand recognition and user experience.
+
+<Accordion title="Common Issues">
+- **No favicon**: Missing favicon.ico and PNG files
+- **Only ICO format**: Missing modern PNG/SVG formats
+- **Wrong sizes**: Missing required sizes (16x16, 32x32, etc.)
+- **Not in root**: Favicon should be in `/favicon.ico`
+</Accordion>
+
+<Accordion title="How to Fix">
+```html
+<!-- ✅ Good: Multiple formats and sizes -->
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+```
+
+**Best practices:**
+- Provide multiple formats (ICO, PNG, SVG)
+- Include apple-touch-icon for iOS
+- Add web manifest for PWA support
+- Keep file sizes small (&lt;50KB)
+- Use simple, recognizable design
+</Accordion>
+
+## Open Graph Tags
+
+### Rule: `core/open-graph`
+
+**What it checks:**
+- Basic OG tags (title, description, image, URL, type)
+- Image dimensions (1200x630 recommended)
+- Proper tag formatting
+
+**Why it matters:**
+Open Graph tags control how your content appears when shared on social media (Facebook, LinkedIn, Slack, etc.).
+
+<Accordion title="Common Issues">
+- **Missing OG tags**: No Open Graph metadata
+- **Small images**: OG image less than 1200x630
+- **Relative URLs**: Should be absolute
+- **Missing required tags**: Missing og:title, og:image, etc.
+</Accordion>
+
+<Accordion title="How to Fix">
+```html
+<!-- ✅ Good: Complete Open Graph tags -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="AI Automation Platform for Sales Teams">
+<meta property="og:description" content="Join 2,400+ teams using AI to automate lead discovery and outreach. Save 15+ hours weekly.">
+<meta property="og:image" content="https://example.com/og-image.png">
+<meta property="og:url" content="https://example.com/platform">
+<meta property="og:site_name" content="PrimePlus">
+
+<!-- Twitter Card tags -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="AI Automation Platform for Sales Teams">
+<meta name="twitter:description" content="Join 2,400+ teams using AI to automate lead discovery and outreach.">
+<meta name="twitter:image" content="https://example.com/twitter-card.png">
+```
+
+**Best practices:**
+- Use 1200x630 images for best display
+- Use absolute URLs for all images
+- Keep titles under 60 characters
+- Keep descriptions under 200 characters
+- Test with [Facebook Sharing Debugger](https://developers.facebook.com/tools/debug/)
+</Accordion>
+
+## Structured Data (Schema.org)
+
+### Rule: `core/structured-data`
+
+**What it checks:**
+- Valid JSON-LD structured data
+- Schema.org vocabulary
+- Required properties
+- No validation errors
+
+**Why it matters:**
+Structured data helps search engines understand your content and can enable rich results (star ratings, prices, events, etc.).
+
+<Accordion title="Common Schemas">
+**Organization:**
+```json
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "PrimePlus",
+  "url": "https://primius.ai",
+  "logo": "https://primius.ai/logo.png",
+  "sameAs": [
+    "https://twitter.com/primius",
+    "https://linkedin.com/company/primius"
+  ]
+}
+```
+
+**Website:**
+```json
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "PrimePlus",
+  "url": "https://primius.ai",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": "https://primius.ai/search?q={search_term_string}",
+    "query-input": "required name=search_term_string"
+  }
+}
+```
+
+**Article:**
+```json
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "10 Ways to Automate Your Sales Workflow",
+  "author": {
+    "@type": "Person",
+    "name": "Jane Smith"
+  },
+  "datePublished": "2026-02-09",
+  "dateModified": "2026-02-10",
+  "image": "https://primius.ai/blog/sales-automation.png"
+}
+```
+</Accordion>
+
+<Note>
+Validate your structured data using [Google's Rich Results Test](https://search.google.com/test/rich-results) before deploying.
+</Note>
+
+## Quick Reference
+
+| Rule | Element | Optimal Length | Required |
+|------|---------|----------------|----------|
+| `core/title` | Title tag | 50-60 chars | Yes |
+| `core/meta-description` | Meta description | 120-160 chars | Recommended |
+| `core/h1` | H1 heading | Natural length | Yes |
+| `core/canonical` | Canonical URL | - | Yes |
+| `core/favicon` | Favicon | Multiple sizes | Recommended |
+| `core/open-graph` | OG tags | Varies by tag | Recommended |
+
+## Related Pages
+
+<CardGroup cols={2}>
+  <Card title="Technical SEO Rules" icon="gear" href="/reference/rules/technical-seo">
+    Sitemap, robots.txt, structured data, and crawlability rules
+  </Card>
+  <Card title="Content Rules" icon="file-lines" href="/reference/rules/content">
+    Content quality, heading hierarchy, and keyword optimization
+  </Card>
+  <Card title="Accessibility Rules" icon="universal-access" href="/reference/rules/accessibility">
+    Alt text, ARIA landmarks, and WCAG compliance
+  </Card>
+  <Card title="Running Audits" icon="play" href="/auditing/running-audits">
+    Learn how to run website audits and interpret results
+  </Card>
+</CardGroup>

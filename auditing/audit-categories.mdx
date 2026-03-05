@@ -1,0 +1,585 @@
+---
+title: 'Audit categories'
+description: 'Comprehensive overview of all 21 audit categories covering SEO, technical issues, performance, security, accessibility, and more.'
+keywords: ['audit categories', 'SEO rules', 'audit rules', 'website categories', 'squirrelscan categories']
+icon: 'grid'
+---
+
+# Audit categories
+
+squirrelscan organizes its **230+ rules** into **21 distinct categories**, each focusing on a specific aspect of website health.
+
+<Info>
+  Every rule in squirrelscan belongs to one category and has a severity level (error, warning, notice) and rank (1-10) indicating its impact.
+</Info>
+
+## Category overview
+
+The 21 categories are grouped into logical domains:
+
+<Tabs>
+  <Tab title="SEO & Visibility" icon="magnifying-glass">
+    <CardGroup cols={2}>
+      <Card title="Core SEO" icon="star" color="#3B82F6">
+        Fundamental SEO elements that search engines rely on
+      </Card>
+      <Card title="Technical SEO" icon="wrench" color="#8B5CF6">
+        Technical implementation of SEO best practices
+      </Card>
+      <Card title="E-E-A-T" icon="medal" color="#F59E0B">
+        Expertise, Experience, Authority, and Trustworthiness signals
+      </Card>
+      <Card title="Keywords" icon="key" color="#22C55E">
+        Keyword usage and optimization
+      </Card>
+      <Card title="Local SEO" icon="location-dot" color="#EF4444">
+        Location-based search optimization
+      </Card>
+    </CardGroup>
+  </Tab>
+  
+  <Tab title="Technical & Performance" icon="gauge-high">
+    <CardGroup cols={2}>
+      <Card title="Performance" icon="rocket" color="#3B82F6">
+        Page speed and resource optimization
+      </Card>
+      <Card title="Crawlability" icon="spider" color="#8B5CF6">
+        Search engine access and indexation
+      </Card>
+      <Card title="URL Structure" icon="link" color="#F59E0B">
+        Clean, semantic URL formatting
+      </Card>
+      <Card title="Mobile" icon="mobile" color="#22C55E">
+        Mobile-friendliness and responsive design
+      </Card>
+      <Card title="Schema" icon="code" color="#EF4444">
+        Structured data and rich snippets
+      </Card>
+    </CardGroup>
+  </Tab>
+  
+  <Tab title="Content & Media" icon="file-lines">
+    <CardGroup cols={2}>
+      <Card title="Content" icon="paragraph" color="#3B82F6">
+        Content quality and structure
+      </Card>
+      <Card title="Images" icon="image" color="#8B5CF6">
+        Image optimization and accessibility
+      </Card>
+      <Card title="Video" icon="video" color="#F59E0B">
+        Video content and optimization
+      </Card>
+      <Card title="Links" icon="link" color="#22C55E">
+        Internal and external link health
+      </Card>
+    </CardGroup>
+  </Tab>
+  
+  <Tab title="Security & Trust" icon="shield-check">
+    <CardGroup cols={2}>
+      <Card title="Security" icon="lock" color="#3B82F6">
+        HTTPS, headers, and vulnerability detection
+      </Card>
+      <Card title="Legal" icon="scale-balanced" color="#8B5CF6">
+        Compliance and required policies
+      </Card>
+    </CardGroup>
+  </Tab>
+  
+  <Tab title="UX & Accessibility" icon="universal-access">
+    <CardGroup cols={2}>
+      <Card title="Accessibility" icon="wheelchair" color="#3B82F6">
+        WCAG compliance and inclusive design
+      </Card>
+      <Card title="User Experience" icon="face-smile" color="#8B5CF6">
+        Usability and user flow
+      </Card>
+      <Card title="Social Media" icon="share-nodes" color="#F59E0B">
+        Social sharing optimization
+      </Card>
+      <Card title="Internationalization" icon="globe" color="#22C55E">
+        Multi-language and region support
+      </Card>
+    </CardGroup>
+  </Tab>
+</Tabs>
+
+## Core SEO
+
+<Card title="Core SEO" icon="star" color="#3B82F6">
+  Fundamental SEO elements that search engines use to understand and rank your content.
+</Card>
+
+### What it covers
+
+<AccordionGroup>
+  <Accordion title="Title tags" icon="heading" defaultOpen>
+    - Title tag presence and length (50-60 characters)
+    - Uniqueness across pages
+    - Keyword placement
+    - Proper formatting
+  </Accordion>
+  
+  <Accordion title="Meta descriptions" icon="file-lines">
+    - Description presence and length (150-160 characters)
+    - Uniqueness across pages
+    - Compelling copy that encourages clicks
+    - Keyword inclusion
+  </Accordion>
+  
+  <Accordion title="Canonical URLs" icon="link">
+    - Canonical tag implementation
+    - Self-referencing canonicals
+    - Avoiding duplicate content issues
+  </Accordion>
+  
+  <Accordion title="Open Graph tags" icon="share-nodes">
+    - og:title, og:description, og:image
+    - Proper social media preview setup
+    - Image dimensions and formatting
+  </Accordion>
+</AccordionGroup>
+
+### Common issues
+
+- Missing or empty title tags
+- Meta descriptions too short or missing
+- Duplicate titles across multiple pages
+- Missing canonical URLs causing duplicate content
+
+<Tip>
+  View detailed rules at [docs.squirrelscan.com/rules/core-seo](https://docs.squirrelscan.com/rules/core-seo)
+</Tip>
+
+## Technical SEO
+
+<Card title="Technical SEO" icon="wrench" color="#8B5CF6">
+  Technical implementation of SEO best practices for search engine crawlers.
+</Card>
+
+### What it covers
+
+- **Robots.txt**: Proper configuration and accessibility
+- **Sitemap.xml**: Presence, format, and comprehensiveness
+- **Structured data**: JSON-LD implementation and validation
+- **Hreflang tags**: International targeting
+- **Pagination**: rel=next/prev for paginated content
+- **Redirects**: Proper 301/302 usage, avoiding chains
+
+### Common issues
+
+- Missing or incorrectly configured robots.txt
+- Sitemap not referenced in robots.txt
+- Invalid structured data markup
+- Redirect chains (multiple hops)
+- Missing hreflang for multi-language sites
+
+## Performance
+
+<Card title="Performance" icon="rocket" color="#3B82F6">
+  Page speed, resource optimization, and loading efficiency.
+</Card>
+
+### What it covers
+
+<Columns cols={2}>
+  <div>
+    #### Speed metrics
+    - Page load time
+    - Time to first byte (TTFB)
+    - First contentful paint (FCP)
+    - Largest contentful paint (LCP)
+  </div>
+  
+  <div>
+    #### Resource optimization
+    - Image compression and formats
+    - CSS/JS minification
+    - Caching headers
+    - Resource prioritization
+  </div>
+</Columns>
+
+### Common issues
+
+- Large unoptimized images
+- Missing cache headers
+- Blocking JavaScript
+- Excessive HTTP requests
+- Slow server response times
+
+## Security
+
+<Card title="Security" icon="lock" color="#EF4444">
+  Security vulnerabilities, HTTPS implementation, and protective headers.
+</Card>
+
+### What it covers
+
+<Steps>
+  <Step title="HTTPS implementation">
+    - SSL/TLS certificate validity
+    - HTTPS-only content
+    - Mixed content detection
+    - HTTP to HTTPS redirects
+  </Step>
+  
+  <Step title="Security headers">
+    - Content-Security-Policy
+    - X-Frame-Options
+    - X-Content-Type-Options
+    - Strict-Transport-Security
+  </Step>
+  
+  <Step title="Secrets detection">
+    - API keys in source code
+    - Exposed credentials
+    - Sensitive data leaks
+  </Step>
+</Steps>
+
+### Critical issues
+
+<Warning>
+  **These issues can expose your site to attacks:**
+  - Missing HTTPS
+  - Exposed API keys or tokens
+  - Missing security headers
+  - Mixed content (HTTP resources on HTTPS pages)
+</Warning>
+
+## Accessibility
+
+<Card title="Accessibility" icon="universal-access" color="#22C55E">
+  WCAG compliance for users with disabilities.
+</Card>
+
+### What it covers
+
+- **Image alt text**: Descriptive alternative text for all images
+- **Color contrast**: Sufficient contrast ratios (WCAG AA/AAA)
+- **Keyboard navigation**: Full keyboard accessibility
+- **ARIA labels**: Proper semantic markup
+- **Form labels**: Associated labels for all inputs
+- **Heading hierarchy**: Logical heading structure (H1 → H2 → H3)
+
+### Common issues
+
+- Images missing alt text
+- Insufficient color contrast (text vs background)
+- Form inputs without labels
+- Skip navigation links missing
+- Non-semantic HTML usage
+
+## Content
+
+<Card title="Content" icon="paragraph" color="#3B82F6">
+  Content quality, structure, and readability.
+</Card>
+
+### What it covers
+
+<Tabs>
+  <Tab title="Structure">
+    - **H1 tags**: Single H1 per page
+    - **Heading hierarchy**: Logical progression (no skipped levels)
+    - **Paragraph length**: Readable chunks
+    - **List usage**: Proper ul/ol formatting
+  </Tab>
+  
+  <Tab title="Quality">
+    - **Content length**: Sufficient depth (300+ words for most pages)
+    - **Readability**: Clear, concise writing
+    - **Grammar**: Proper language usage
+    - **Keyword density**: Natural keyword usage
+  </Tab>
+</Tabs>
+
+## Links
+
+<Card title="Links" icon="link" color="#8B5CF6">
+  Internal and external link health and optimization.
+</Card>
+
+### What it covers
+
+<CardGroup cols={2}>
+  <Card title="Internal links" icon="arrow-right">
+    - Broken internal links (404 errors)
+    - Orphaned pages (no incoming links)
+    - Deep link structure
+    - Anchor text optimization
+  </Card>
+  
+  <Card title="External links" icon="arrow-up-right-from-square">
+    - Broken external links
+    - Proper rel attributes (nofollow, noopener)
+    - Link destinations
+    - Outbound link quality
+  </Card>
+</CardGroup>
+
+### Common issues
+
+<Columns cols={2}>
+  <div>
+    ❌ **Broken internal links**
+    - Links to deleted pages
+    - Incorrect URL paths
+    - Missing trailing slashes
+  </div>
+  
+  <div>
+    ❌ **External link problems**
+    - Dead external links
+    - Missing rel="noopener" on target="_blank"
+    - Links to low-quality sites
+  </div>
+</Columns>
+
+## Crawlability
+
+<Card title="Crawlability" icon="spider" color="#F59E0B">
+  Search engine access and indexation control.
+</Card>
+
+### What it covers
+
+- **Robots.txt**: Crawler directives
+- **Sitemap.xml**: Page discovery aid
+- **Meta robots tags**: Per-page indexation control
+- **X-Robots-Tag headers**: HTTP-level directives
+- **URL parameters**: Handling of query strings
+- **Noindex directives**: Proper usage and implications
+
+## Images
+
+<Card title="Images" icon="image" color="#3B82F6">
+  Image optimization, accessibility, and best practices.
+</Card>
+
+### What it covers
+
+<AccordionGroup>
+  <Accordion title="Accessibility">
+    - Alt text presence and quality
+    - Decorative images (empty alt)
+    - Image captions
+  </Accordion>
+  
+  <Accordion title="Optimization">
+    - File size and compression
+    - Modern formats (WebP, AVIF)
+    - Responsive images (srcset)
+    - Lazy loading
+  </Accordion>
+  
+  <Accordion title="Technical">
+    - Proper dimensions
+    - Aspect ratio preservation
+    - CDN usage
+  </Accordion>
+</AccordionGroup>
+
+## Mobile
+
+<Card title="Mobile" icon="mobile" color="#22C55E">
+  Mobile-friendliness and responsive design.
+</Card>
+
+### What it covers
+
+- **Responsive design**: Viewport meta tag, fluid layouts
+- **Touch targets**: Minimum size (44x44px)
+- **Font sizes**: Legible on mobile (16px minimum)
+- **Horizontal scrolling**: Avoid horizontal overflow
+- **Mobile-friendly navigation**: Hamburger menus, touch-friendly
+
+## Social Media
+
+<Card title="Social Media" icon="share-nodes" color="#8B5CF6">
+  Social sharing optimization and previews.
+</Card>
+
+### What it covers
+
+<Tabs>
+  <Tab title="Open Graph">
+    - og:title, og:description, og:image
+    - og:type, og:url
+    - Image dimensions (1200x630 recommended)
+  </Tab>
+  
+  <Tab title="Twitter Cards">
+    - twitter:card, twitter:title, twitter:description
+    - twitter:image
+    - Card type selection
+  </Tab>
+</Tabs>
+
+## URL Structure
+
+<Card title="URL Structure" icon="link" color="#F59E0B">
+  Clean, semantic, and SEO-friendly URLs.
+</Card>
+
+### What it covers
+
+- **Length**: Keep URLs under 100 characters
+- **Hyphens**: Use hyphens (not underscores) for word separation
+- **Keywords**: Include target keywords
+- **Lowercase**: Use lowercase letters only
+- **Simplicity**: Avoid unnecessary parameters and subfolders
+
+### Good vs Bad URLs
+
+<Columns cols={2}>
+  <div>
+    ✅ **Good URLs**
+    ```
+    /blog/seo-best-practices
+    /products/wireless-headphones
+    /guides/getting-started
+    ```
+  </div>
+  
+  <div>
+    ❌ **Bad URLs**
+    ```
+    /blog/post?id=12345
+    /products_wireless_headphones
+    /p/g/s/Getting_Started
+    ```
+  </div>
+</Columns>
+
+## Keywords
+
+<Card title="Keywords" icon="key" color="#22C55E">
+  Keyword usage, density, and optimization.
+</Card>
+
+### What it covers
+
+- **Keyword stuffing**: Detecting over-optimization
+- **Keyword placement**: Title, headings, first paragraph
+- **Natural usage**: Contextual keyword integration
+- **Related terms**: Semantic keyword variations
+
+## E-E-A-T
+
+<Card title="E-E-A-T" icon="medal" color="#3B82F6">
+  Expertise, Experience, Authority, and Trustworthiness signals for Google.
+</Card>
+
+### What it covers
+
+- **Author bios**: Expert credentials and qualifications
+- **Contact information**: Easy-to-find contact details
+- **About page**: Company history and mission
+- **External validation**: Citations, references, testimonials
+- **Content quality**: In-depth, accurate, original content
+
+## User Experience
+
+<Card title="User Experience" icon="face-smile" color="#8B5CF6">
+  Usability, user flow, and interaction design.
+</Card>
+
+### What it covers
+
+- **Form validation**: Clear error messages
+- **Error handling**: User-friendly error pages
+- **Navigation**: Clear menu structure
+- **Search functionality**: Site search implementation
+- **CTA clarity**: Clear calls-to-action
+
+## Schema
+
+<Card title="Schema" icon="code" color="#F59E0B">
+  Structured data markup (Schema.org) for rich snippets.
+</Card>
+
+### What it covers
+
+- **JSON-LD implementation**: Proper format and syntax
+- **Schema types**: Organization, Article, Product, Event, etc.
+- **Required properties**: Complete schema with all required fields
+- **Validation**: No errors in structured data
+
+## Legal
+
+<Card title="Legal" icon="scale-balanced" color="#EF4444">
+  Legal compliance and required policies.
+</Card>
+
+### What it covers
+
+- **Privacy policy**: GDPR, CCPA compliance
+- **Terms of service**: User agreements
+- **Cookie consent**: Cookie notices and opt-in
+- **Copyright notices**: Proper attribution
+- **Disclaimers**: Required legal disclaimers
+
+## Local SEO
+
+<Card title="Local SEO" icon="location-dot" color="#22C55E">
+  Location-based search optimization.
+</Card>
+
+### What it covers
+
+- **NAP consistency**: Name, Address, Phone number
+- **Geo metadata**: Location tags and structured data
+- **Local schema**: LocalBusiness markup
+- **Google Business Profile**: Integration and consistency
+
+## Video
+
+<Card title="Video" icon="video" color="#3B82F6">
+  Video content optimization and accessibility.
+</Card>
+
+### What it covers
+
+- **VideoObject schema**: Structured data for videos
+- **Transcripts**: Text alternatives
+- **Captions**: Subtitle availability
+- **Thumbnails**: Engaging preview images
+
+## Internationalization
+
+<Card title="Internationalization" icon="globe" color="#8B5CF6">
+  Multi-language and region support.
+</Card>
+
+### What it covers
+
+- **Hreflang tags**: Language and region targeting
+- **Language declaration**: HTML lang attribute
+- **Content localization**: Proper translation
+- **Regional URLs**: Country/language-specific URLs
+
+## Rule documentation
+
+Each rule has detailed documentation available online:
+
+<Card title="Rule reference template" icon="book" href="https://docs.squirrelscan.com/rules/">
+  ```
+  https://docs.squirrelscan.com/rules/{category}/{rule-id}
+  ```
+  
+  **Example:**
+  https://docs.squirrelscan.com/rules/links/external-links
+</Card>
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Run an audit" icon="play" href="/auditing/running-audits">
+    Start auditing websites across all 21 categories
+  </Card>
+  <Card title="Interpret results" icon="chart-line" href="/auditing/interpreting-results">
+    Learn how to prioritize and fix issues
+  </Card>
+</CardGroup>

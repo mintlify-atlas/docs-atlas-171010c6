@@ -1,0 +1,689 @@
+---
+title: 'Interpreting results'
+description: 'Learn how to understand audit results, prioritize fixes, and improve your website health score.'
+keywords: ['audit results', 'health score', 'severity levels', 'prioritizing fixes', 'score targets']
+icon: 'chart-line'
+---
+
+# Interpreting results
+
+Learn how to analyze audit results, understand scoring, and prioritize fixes effectively.
+
+<Info>
+  A complete audit provides an overall health score, category-specific scores, issue listings by severity, and actionable recommendations.
+</Info>
+
+## Understanding health scores
+
+The overall health score ranges from **0 to 100** and reflects your website's overall health across all audit categories.
+
+### Score grades
+
+<Columns cols={5}>
+  <Card title="A" color="#22C55E">
+    **95-100**
+    
+    Excellent
+  </Card>
+  <Card title="B" color="#3B82F6">
+    **85-94**
+    
+    Good
+  </Card>
+  <Card title="C" color="#F59E0B">
+    **70-84**
+    
+    Fair
+  </Card>
+  <Card title="D" color="#F97316">
+    **50-69**
+    
+    Poor
+  </Card>
+  <Card title="F" color="#EF4444">
+    **0-49**
+    
+    Critical
+  </Card>
+</Columns>
+
+### What the scores mean
+
+<Tabs>
+  <Tab title="Grade A (95-100)" icon="star">
+    <Badge color="green" icon="check">Excellent</Badge>
+    
+    Your website follows best practices across nearly all areas. Minor improvements may still be possible.
+    
+    #### Characteristics
+    - Few or no critical issues
+    - Most rules passing
+    - Well-optimized for search engines
+    - Good user experience
+    
+    #### Action
+    - Maintain current standards
+    - Address any remaining notices
+    - Monitor regularly to catch regressions
+  </Tab>
+  
+  <Tab title="Grade B (85-94)" icon="circle-check">
+    <Badge color="blue" icon="thumbs-up">Good</Badge>
+    
+    Your website is in good shape with some room for improvement.
+    
+    #### Characteristics
+    - No critical issues (or very few)
+    - Some warnings present
+    - Solid foundation
+    - Minor optimizations needed
+    
+    #### Action
+    - Address all warnings
+    - Fix remaining errors
+    - Polish content and metadata
+  </Tab>
+  
+  <Tab title="Grade C (70-84)" icon="circle-half-stroke">
+    <Badge color="yellow" icon="triangle-exclamation">Fair</Badge>
+    
+    Your website has noticeable issues that should be addressed.
+    
+    #### Characteristics
+    - Several errors and warnings
+    - Missing key elements (meta tags, alt text)
+    - Performance or security concerns
+    - User experience gaps
+    
+    #### Action
+    - **Priority**: Fix all errors
+    - Address high-rank warnings
+    - Improve content structure
+    - Optimize performance
+  </Tab>
+  
+  <Tab title="Grade D (50-69)" icon="circle-xmark">
+    <Badge color="orange" icon="exclamation">Poor</Badge>
+    
+    Your website has significant issues impacting SEO and user experience.
+    
+    #### Characteristics
+    - Multiple critical errors
+    - Missing fundamental elements
+    - Poor structure and organization
+    - Performance/security problems
+    
+    #### Action
+    - **Urgent**: Address all errors immediately
+    - Fix structural issues (headings, links)
+    - Add missing meta tags and descriptions
+    - Resolve security vulnerabilities
+  </Tab>
+  
+  <Tab title="Grade F (0-49)" icon="xmark">
+    <Badge color="red" icon="circle-exclamation">Critical</Badge>
+    
+    Your website has critical issues that severely impact functionality, SEO, and user experience.
+    
+    #### Characteristics
+    - Widespread critical errors
+    - Major functionality issues
+    - Security vulnerabilities
+    - Poor or missing SEO implementation
+    
+    #### Action
+    - **Critical**: Stop and fix immediately
+    - Address security issues first
+    - Fix broken functionality
+    - Implement basic SEO elements
+    - Consider comprehensive redesign
+  </Tab>
+</Tabs>
+
+## Severity levels
+
+Every issue in the audit is assigned a severity level that indicates its importance:
+
+<Columns cols={3}>
+  <Card title="Error" icon="circle-exclamation" color="#EF4444">
+    **Critical issues** that must be fixed
+    
+    Examples:
+    - Missing title tags
+    - Broken internal links
+    - Security vulnerabilities
+    - Accessibility violations
+    
+    **Impact**: High
+  </Card>
+  
+  <Card title="Warning" icon="triangle-exclamation" color="#F59E0B">
+    **Important issues** that should be addressed
+    
+    Examples:
+    - Short meta descriptions
+    - Missing alt text
+    - Slow page load times
+    - Redirect chains
+    
+    **Impact**: Medium
+  </Card>
+  
+  <Card title="Notice" icon="circle-info" color="#3B82F6">
+    **Suggestions** for improvement
+    
+    Examples:
+    - Optimal image formats
+    - Additional schema markup
+    - Enhanced content structure
+    - Best practice recommendations
+    
+    **Impact**: Low
+  </Card>
+</Columns>
+
+### Severity prioritization
+
+<Steps>
+  <Step title="Fix all errors first">
+    Errors have the highest impact on your site's health, SEO, and user experience.
+    
+    <Warning>
+      **Do not ignore errors.** They can prevent search engines from properly crawling and indexing your site.
+    </Warning>
+  </Step>
+  
+  <Step title="Address warnings next">
+    Warnings indicate important issues that, while not critical, significantly affect your site's performance.
+  </Step>
+  
+  <Step title="Implement notices for polish">
+    Notices are opportunities to go beyond the baseline and achieve excellence.
+  </Step>
+</Steps>
+
+## Issue ranks
+
+In addition to severity, each rule has a **rank from 1 to 10** indicating its impact on overall site health:
+
+<Columns cols={2}>
+  <div>
+    ### High rank (8-10)
+    
+    - Major impact on SEO
+    - Critical for user experience
+    - Security concerns
+    - Core functionality
+    
+    **Examples:**
+    - Missing title tags (rank 10)
+    - Broken internal links (rank 9)
+    - No HTTPS (rank 10)
+  </div>
+  
+  <div>
+    ### Low rank (1-3)
+    
+    - Minor optimizations
+    - Nice-to-have improvements
+    - Minimal impact
+    - Edge cases
+    
+    **Examples:**
+    - Image format optimization (rank 3)
+    - Minor content improvements (rank 2)
+    - Optional schema additions (rank 2)
+  </div>
+</Columns>
+
+<Tip>
+  **Focus on high-rank errors first** - these provide the biggest improvement to your overall score.
+</Tip>
+
+## Category scores and grades
+
+In addition to the overall score, each of the 21 audit categories receives its own score and grade:
+
+### Example category breakdown
+
+<Columns cols={2}>
+  <div>
+    | Category | Score | Grade |
+    |----------|-------|-------|
+    | Core SEO | 92 | A |
+    | Technical SEO | 88 | B |
+    | Performance | 76 | C |
+    | Security | 100 | A |
+    | Accessibility | 68 | D |
+  </div>
+  
+  <div>
+    | Category | Score | Grade |
+    |----------|-------|-------|
+    | Content | 84 | B |
+    | Links | 55 | D |
+    | Images | 72 | C |
+    | Mobile | 95 | A |
+    | Social Media | 90 | A |
+  </div>
+</Columns>
+
+### Interpreting category scores
+
+<AccordionGroup>
+  <Accordion title="Identify weak areas" icon="magnifying-glass-chart" defaultOpen>
+    Categories with low scores reveal where to focus your efforts.
+    
+    In the example above:
+    - **Accessibility (68)** needs significant improvement
+    - **Links (55)** requires urgent attention (broken links likely)
+    - **Performance (76)** could be optimized
+  </Accordion>
+  
+  <Accordion title="Celebrate strengths" icon="trophy">
+    High-scoring categories show where your site excels:
+    
+    - **Security (100)** - properly configured HTTPS and headers
+    - **Mobile (95)** - excellent responsive design
+    - **Core SEO (92)** - strong fundamental SEO implementation
+  </Accordion>
+  
+  <Accordion title="Balance improvements" icon="scale-balanced">
+    Don't over-optimize high-scoring categories while ignoring low scores.
+    
+    **Better approach:**
+    - Bring all categories to 85+ (Grade B)
+    - Then optimize further to reach 95+ (Grade A)
+  </Accordion>
+</AccordionGroup>
+
+## Prioritizing fixes
+
+Use this framework to prioritize which issues to fix first:
+
+<Steps>
+  <Step title="Security first">
+    Address all security-related errors immediately:
+    
+    - Missing HTTPS
+    - Exposed credentials or API keys
+    - Missing security headers
+    - Mixed content
+    
+    <Danger>
+      **Security issues can expose your site to attacks and harm users.** Fix these before anything else.
+    </Danger>
+  </Step>
+  
+  <Step title="High-rank errors">
+    Fix errors with rank 8-10 that heavily impact SEO and functionality:
+    
+    - Missing or duplicate title tags
+    - Broken internal links
+    - Missing H1 tags
+    - Inaccessible pages (robots.txt blocks)
+  </Step>
+  
+  <Step title="Medium-rank errors">
+    Address errors with rank 5-7:
+    
+    - Missing meta descriptions
+    - Missing alt text on images
+    - Poor heading hierarchy
+    - Slow performance
+  </Step>
+  
+  <Step title="All warnings">
+    Work through warnings by rank:
+    
+    - High-rank warnings (8-10) first
+    - Medium-rank warnings (5-7) next
+    - Low-rank warnings (1-4) last
+  </Step>
+  
+  <Step title="Polish with notices">
+    Implement notices for final optimization:
+    
+    - Advanced schema markup
+    - Image format upgrades (WebP, AVIF)
+    - Additional structured data
+    - Content enhancements
+  </Step>
+</Steps>
+
+### Prioritization matrix
+
+<Card title="Decision framework">
+  | Severity | Rank 8-10 | Rank 5-7 | Rank 1-4 |
+  |----------|-----------|----------|----------|
+  | **Error** | 🔴 Fix immediately | 🟠 Fix today | 🟡 Fix this week |
+  | **Warning** | 🟠 Fix today | 🟡 Fix this week | 🟢 Fix when possible |
+  | **Notice** | 🟡 Fix this week | 🟢 Fix when possible | 🔵 Nice to have |
+</Card>
+
+## Common issue patterns
+
+Recognize these patterns in your audit results:
+
+<AccordionGroup>
+  <Accordion title="Missing metadata across many pages" icon="file-lines">
+    **Pattern:**
+    - 20+ pages missing meta descriptions
+    - Duplicate or generic title tags
+    
+    **Likely cause:**
+    - Missing metadata in content management system
+    - Template issues
+    
+    **Solution:**
+    - Add metadata to CMS/frontmatter
+    - Update page templates to generate metadata
+    - Use dynamic metadata generation
+    
+    <Tip>
+      Use subagents to fix metadata across multiple files in parallel.
+    </Tip>
+  </Accordion>
+  
+  <Accordion title="Widespread accessibility issues" icon="universal-access">
+    **Pattern:**
+    - 50+ images missing alt text
+    - Poor heading hierarchy on most pages
+    - Color contrast failures
+    
+    **Likely cause:**
+    - Lack of accessibility awareness during development
+    - Automated image insertion without alt text
+    
+    **Solution:**
+    - Add alt text to all images (can parallelize)
+    - Fix heading structure (H1 → H2 → H3)
+    - Update color schemes for better contrast
+  </Accordion>
+  
+  <Accordion title="Performance bottlenecks" icon="gauge">
+    **Pattern:**
+    - Slow page load times across the site
+    - Large unoptimized images
+    - Missing caching headers
+    
+    **Likely cause:**
+    - No image optimization pipeline
+    - Server configuration issues
+    
+    **Solution:**
+    - Implement image optimization (compression, modern formats)
+    - Configure caching headers
+    - Enable CDN
+    - Minimize and bundle JavaScript/CSS
+  </Accordion>
+  
+  <Accordion title="Broken links" icon="link-slash">
+    **Pattern:**
+    - Multiple 404 errors for internal links
+    - Broken external links
+    
+    **Likely cause:**
+    - Deleted or moved pages without redirects
+    - Outdated external links
+    
+    **Solution:**
+    - Set up 301 redirects for moved pages
+    - Update or remove broken external links
+    - Implement link checking in CI/CD
+  </Accordion>
+  
+  <Accordion title="Inconsistent SEO implementation" icon="magnifying-glass">
+    **Pattern:**
+    - Some pages perfect, others missing basics
+    - Inconsistent structure across sections
+    
+    **Likely cause:**
+    - Multiple developers with different standards
+    - Mixed templates or frameworks
+    
+    **Solution:**
+    - Standardize templates
+    - Create SEO checklist for new pages
+    - Use shared components for metadata
+  </Accordion>
+</AccordionGroup>
+
+## Score targets
+
+Set realistic improvement goals based on your starting score:
+
+<Card title="Score improvement targets">
+  | Starting Score | Target Score | Expected Work | Timeframe |
+  |----------------|--------------|---------------|------------|
+  | **< 50** (Grade F) | **75+** (Grade C) | Major overhaul | 2-4 weeks |
+  | **50-70** (Grade D) | **85+** (Grade B) | Significant fixes | 1-2 weeks |
+  | **70-85** (Grade C) | **90+** (Grade A) | Polish and optimize | 3-7 days |
+  | **> 85** (Grade B+) | **95+** (Grade A) | Fine-tuning | 1-3 days |
+</Card>
+
+<Warning>
+  **A site is only considered COMPLETE and FIXED when scores are above 95 (Grade A) with coverage set to FULL** (`--coverage full`).
+</Warning>
+
+### Realistic expectations
+
+<Tabs>
+  <Tab title="Small site (< 50 pages)">
+    - **Surface audit**: 1-2 days to reach 90+
+    - **Full audit**: 2-3 days to reach 95+
+    
+    Typical issues:
+    - Metadata gaps
+    - Image alt text
+    - Heading hierarchy
+  </Tab>
+  
+  <Tab title="Medium site (50-200 pages)">
+    - **Surface audit**: 3-5 days to reach 90+
+    - **Full audit**: 1-2 weeks to reach 95+
+    
+    Typical issues:
+    - Content inconsistencies
+    - Template problems
+    - Performance optimization
+  </Tab>
+  
+  <Tab title="Large site (200+ pages)">
+    - **Surface audit**: 1-2 weeks to reach 90+
+    - **Full audit**: 2-4 weeks to reach 95+
+    
+    Typical issues:
+    - Systemic problems
+    - Legacy content
+    - Complex redirects
+  </Tab>
+</Tabs>
+
+## Iterative improvement process
+
+Don't try to fix everything in one pass. Follow this iterative approach:
+
+<Steps>
+  <Step title="Initial audit">
+    Run a **surface audit** to get the baseline:
+    
+    ```bash
+    squirrel audit https://example.com --coverage surface --format llm
+    ```
+    
+    Review the overall score and identify the top 5 issues.
+  </Step>
+  
+  <Step title="Fix first batch">
+    Address security issues and high-rank errors:
+    
+    - Fix 10-20 issues
+    - Focus on systematic fixes (e.g., all missing meta descriptions)
+    - Use subagents for parallelizable content fixes
+  </Step>
+  
+  <Step title="Re-audit">
+    Run another audit to measure improvement:
+    
+    ```bash
+    squirrel audit https://example.com --refresh --format llm
+    ```
+    
+    Compare scores before and after.
+  </Step>
+  
+  <Step title="Fix second batch">
+    Address remaining errors and high-priority warnings:
+    
+    - Continue systematic fixes
+    - Address category-specific issues
+  </Step>
+  
+  <Step title="Polish">
+    Work through remaining warnings and implement notices:
+    
+    - Optimize performance
+    - Add advanced schema
+    - Enhance accessibility
+  </Step>
+  
+  <Step title="Final audit">
+    Run a **full audit** to verify completeness:
+    
+    ```bash
+    squirrel audit https://example.com --coverage full --format llm
+    ```
+    
+    Target: **95+ score** across all categories.
+  </Step>
+</Steps>
+
+<Check>
+  After each fix batch, re-audit to verify improvements and catch any regressions.
+</Check>
+
+## Reading LLM format output
+
+The LLM format is optimized for AI agents. Here's how to read it:
+
+### Structure overview
+
+```xml
+<audit>
+  <summary>           <!-- High-level metrics -->
+  <issues>            <!-- Issues grouped by category -->
+  <broken-links>      <!-- List of broken links -->
+  <recommendations>   <!-- Prioritized action items -->
+</audit>
+```
+
+### Summary section
+
+```xml
+<summary>
+  <score>78</score>
+  <grade>C</grade>
+  <pages-crawled>95</pages-crawled>
+  <errors>23</errors>
+  <warnings>47</warnings>
+  <notices>12</notices>
+</summary>
+```
+
+**Key metrics:**
+- **score**: Overall health score (0-100)
+- **grade**: Letter grade (A-F)
+- **pages-crawled**: Number of pages analyzed
+- **errors/warnings/notices**: Issue counts by severity
+
+### Issues section
+
+```xml
+<issues>
+  <category name="Core SEO" score="85">
+    <issue
+      rule="missing-meta-description"
+      severity="warning"
+      rank="8"
+      affected-pages="12"
+    >
+      <description>12 pages missing meta descriptions</description>
+      <recommendation>Add unique meta descriptions (150-160 characters)</recommendation>
+      <pages>
+        <page>/blog/post-1</page>
+        <page>/blog/post-2</page>
+        ...
+      </pages>
+    </issue>
+  </category>
+</issues>
+```
+
+**Focus on:**
+- **severity**: error > warning > notice
+- **rank**: 8-10 = high impact
+- **affected-pages**: How widespread the issue is
+
+### Recommendations section
+
+```xml
+<recommendations>
+  <item priority="high">
+    Fix 23 broken internal links
+  </item>
+  <item priority="high">
+    Add meta descriptions to 12 pages
+  </item>
+  <item priority="medium">
+    Optimize 45 images (compress and use WebP)
+  </item>
+</recommendations>
+```
+
+**Priorities:**
+- **high**: Errors and high-rank warnings
+- **medium**: Medium-rank warnings
+- **low**: Notices and low-rank issues
+
+## Tracking progress over time
+
+Monitor site health by comparing audits:
+
+### Compare audits
+
+```bash
+# Baseline audit
+squirrel audit https://example.com --format llm
+# Note the audit ID: a1b2c3d4
+
+# After fixes, run a fresh audit
+squirrel audit https://example.com --refresh --format llm
+# Note the new audit ID: e5f6g7h8
+
+# Compare to see improvements
+squirrel report --diff a1b2c3d4 --format llm
+```
+
+### Track score trends
+
+Keep a log of audit scores:
+
+| Date | Score | Grade | Notes |
+|------|-------|-------|-------|
+| 2024-10-01 | 68 | D | Baseline |
+| 2024-10-05 | 76 | C | Fixed meta tags |
+| 2024-10-08 | 84 | B | Fixed broken links |
+| 2024-10-11 | 92 | A | Performance optimization |
+| 2024-10-15 | 97 | A | Final polish |
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Audit categories" icon="grid" href="/auditing/audit-categories">
+    Learn about all 21 categories and their rules
+  </Card>
+  <Card title="Running audits" icon="play" href="/auditing/running-audits">
+    Master audit commands and workflows
+  </Card>
+</CardGroup>

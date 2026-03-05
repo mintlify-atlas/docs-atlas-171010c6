@@ -1,0 +1,327 @@
+---
+title: 'AI Agent Skills Overview'
+description: 'Learn how to extend AI agents with specialized skills for website auditing, marketing psychology, and more'
+---
+
+# AI Agent Skills
+
+AI agent skills are specialized capability modules that give agents expert knowledge and domain-specific workflows. They enable agents to perform complex tasks like auditing websites for SEO issues or applying psychological principles to marketing.
+
+## What Are Skills?
+
+Skills are structured instruction sets that:
+
+- **Provide domain expertise** - Deep knowledge in specialized areas
+- **Define workflows** - Step-by-step processes for complex tasks
+- **Enable tool access** - Permission to use specific commands and CLIs
+- **Include resources** - References, templates, and best practices
+
+Think of skills as expert consultants that your AI agent can call upon when needed.
+
+## Available Skills
+
+The Market Research toolkit includes two powerful skills:
+
+<CardGroup cols={2}>
+  <Card title="audit-website" icon="magnifying-glass-chart" href="/skills/audit-website-skill">
+    Audit websites for SEO, performance, security, and 230+ other rules using squirrelscan CLI
+  </Card>
+  <Card title="marketing-psychology" icon="brain" href="/skills/marketing-psychology-skill">
+    Apply 70+ mental models and psychological principles to marketing decisions
+  </Card>
+</CardGroup>
+
+## How Skills Work
+
+Skills integrate seamlessly into the AI agent workflow:
+
+### 1. Skill Detection
+
+The agent automatically loads relevant skills based on:
+- User requests ("audit my website", "apply psychology to this landing page")
+- Context detection (finding squirrel.toml or marketing context files)
+- Explicit invocation ("use the marketing-psychology skill")
+
+### 2. Skill Loading
+
+When a skill is activated:
+
+```bash
+# The agent loads the skill instructions
+Skill loaded: audit-website
+Version: 1.18
+Tools enabled: squirrel CLI
+```
+
+The skill's knowledge becomes available to guide the agent's actions.
+
+### 3. Task Execution
+
+The agent follows the skill's workflows and applies its expertise:
+
+<Steps>
+  <Step title="Context Gathering">
+    The agent reads relevant files and understands the current state
+  </Step>
+  <Step title="Strategy Planning">
+    Using the skill's mental models, the agent plans the approach
+  </Step>
+  <Step title="Action Execution">
+    The agent performs actions using skill-approved tools and methods
+  </Step>
+  <Step title="Result Validation">
+    The agent verifies success using skill-defined criteria
+  </Step>
+</Steps>
+
+## Integration Patterns
+
+### Pattern 1: Single-Skill Tasks
+
+Some tasks use one skill exclusively:
+
+```bash
+# User request
+"Audit squirrelscan.com for SEO issues"
+
+# Agent loads audit-website skill
+# Runs squirrel audit https://squirrelscan.com --format llm
+# Analyzes results and suggests fixes
+```
+
+### Pattern 2: Multi-Skill Workflows
+
+Complex tasks can combine multiple skills:
+
+```bash
+# User request
+"Audit our landing page and optimize it using psychology"
+
+# Agent loads both skills:
+# 1. audit-website - identifies technical and content issues
+# 2. marketing-psychology - applies mental models to messaging
+
+# Combined approach:
+# - Technical fixes from audit (broken links, meta tags)
+# - Psychological improvements (scarcity, social proof, loss aversion)
+```
+
+### Pattern 3: Skill + Product Context
+
+Skills can integrate with product-specific context:
+
+```markdown
+# .claude/product-marketing-context.md
+Product: TaskFlow
+Audience: Project managers at 50-200 person companies
+Pain points: Team coordination, deadline tracking
+```
+
+When the marketing-psychology skill is loaded, it uses this context to tailor recommendations:
+
+```
+# Instead of generic advice:
+"Use social proof"
+
+# Context-aware recommendations:
+"Show testimonials from project managers at mid-size companies
+Highlight how TaskFlow solved coordination challenges
+Address deadline anxiety with progress visualization"
+```
+
+## Working with Skills
+
+### Checking Available Skills
+
+To see what skills are available:
+
+```bash
+# List all installed skills
+ls ~/.agent/skills/
+
+# View a specific skill
+cat ~/.agent/skills/audit-website/SKILL.md
+```
+
+### Skill Prerequisites
+
+Some skills require external tools:
+
+<Warning>
+  The **audit-website** skill requires the squirrel CLI to be installed. See [installation instructions](/skills/audit-website-skill#installation).
+</Warning>
+
+<Note>
+  The **marketing-psychology** skill has no external dependencies - it provides pure knowledge and frameworks.
+</Note>
+
+### Creating Skill-Aware Context
+
+Help agents use skills effectively by providing context:
+
+<CodeGroup>
+```markdown .claude/product-marketing-context.md
+# Product Marketing Context
+
+Product: [Your Product Name]
+Audience: [Target customer profile]
+Value Proposition: [Core value delivered]
+Pain Points: [Problems you solve]
+Differentiators: [What makes you unique]
+```
+
+```toml squirrel.toml
+# Website Audit Configuration
+[project]
+name = "my-saas-product"
+
+[crawl]
+max_pages = 200
+coverage = "full"
+
+[audit]
+min_score = 85
+```
+</CodeGroup>
+
+## Skill Workflows
+
+### Website Audit Workflow
+
+Typical flow when using the audit-website skill:
+
+<Steps>
+  <Step title="Initial Audit">
+    Run surface scan to identify issues
+    
+    ```bash
+    squirrel audit https://example.com --format llm
+    ```
+  </Step>
+  
+  <Step title="Fix Issues">
+    Address critical errors and warnings in parallel using subagents
+  </Step>
+  
+  <Step title="Re-Audit">
+    Verify fixes and identify remaining issues
+    
+    ```bash
+    squirrel audit https://example.com --refresh --format llm
+    ```
+  </Step>
+  
+  <Step title="Iterate">
+    Continue fixing until score targets are met (typically 85-95+)
+  </Step>
+</Steps>
+
+### Psychology Application Workflow
+
+Typical flow when using the marketing-psychology skill:
+
+<Steps>
+  <Step title="Understand Context">
+    Read product context and current marketing materials
+  </Step>
+  
+  <Step title="Identify Models">
+    Select relevant mental models for the specific challenge
+  </Step>
+  
+  <Step title="Apply Principles">
+    Recommend specific changes based on psychological principles
+  </Step>
+  
+  <Step title="Validate">
+    Explain the psychology behind each recommendation
+  </Step>
+</Steps>
+
+## Best Practices
+
+### For Users
+
+1. **Be specific** - "Audit my website and fix all SEO issues" vs "check my site"
+2. **Provide context** - Share product info, target audience, and goals
+3. **Trust the workflow** - Skills contain proven processes, let them guide the work
+4. **Iterate** - Complex tasks often require multiple rounds
+
+### For Agents
+
+1. **Load skills proactively** - Don't wait to be asked
+2. **Follow workflows completely** - Don't skip steps or stop early
+3. **Parallelize when possible** - Use subagents for bulk fixes
+4. **Measure and verify** - Re-audit after changes, validate improvements
+
+## Advanced Usage
+
+### Combining Skills with Custom Tools
+
+Skills can work alongside your existing tools:
+
+```bash
+# Audit site with squirrel
+squirrel audit https://example.com --format llm
+
+# Then run your custom checks
+npm run validate-links
+npm run check-accessibility
+
+# Combine results for comprehensive analysis
+```
+
+### Skill-Guided Development
+
+Use skills during development:
+
+```bash
+# Before deployment
+1. Run audit against local dev server
+2. Fix issues in code
+3. Run tests and type checking
+4. Re-audit to verify
+5. Deploy with confidence
+```
+
+### CI/CD Integration
+
+Automate skill workflows in your pipeline:
+
+```yaml
+# .github/workflows/audit.yml
+name: Website Audit
+on: [push, pull_request]
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install squirrel
+        run: curl -fsSL https://squirrelscan.com/install | bash
+      - name: Run audit
+        run: |
+          squirrel init -n ${{ github.repository }}
+          squirrel audit https://preview.example.com \
+            --format json \
+            --coverage quick
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Website Auditing" icon="magnifying-glass-chart" href="/skills/audit-website-skill">
+    Learn how to audit websites and fix 230+ types of issues
+  </Card>
+  <Card title="Marketing Psychology" icon="brain" href="/skills/marketing-psychology-skill">
+    Master 70+ mental models for better marketing decisions
+  </Card>
+</CardGroup>
+
+## Need Help?
+
+Skills are designed to be self-explanatory, but if you need assistance:
+
+- **audit-website**: Check [squirrelscan docs](https://docs.squirrelscan.com)
+- **marketing-psychology**: Skills include examples and explanations inline
+- **General questions**: Skills work best with specific requests and clear context

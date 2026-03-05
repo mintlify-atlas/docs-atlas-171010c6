@@ -1,0 +1,503 @@
+---
+title: "Performance Rules"
+description: "Reference guide for performance audit rules including page speed, compression, caching, and resource optimization"
+---
+
+## Overview
+
+Performance rules ensure your website loads quickly and provides a smooth user experience. Fast sites rank better in search results and have higher conversion rates.
+
+<Info>
+**Performance Impact**: A 1-second delay in page load time can reduce conversions by 7%, page views by 11%, and customer satisfaction by 16%.
+</Info>
+
+## Compression
+
+### Rule: `perf/compression`
+
+**What it checks:**
+- Gzip or Brotli compression enabled
+- Text resources compressed (HTML, CSS, JS, JSON, XML, SVG)
+- Compression ratio (target: 60-80% reduction)
+
+**Why it matters:**
+Compression reduces file size by 60-80%, dramatically improving page load times, especially on slow connections.
+
+<Accordion title="Common Issues & Fixes">
+**Issue: No compression (2KB HTML served uncompressed)**
+
+```bash
+# Check if compression is enabled
+curl -H "Accept-Encoding: gzip" -I https://example.com
+# Look for: Content-Encoding: gzip
+```
+
+**Fix for Nginx:**
+```nginx
+# /etc/nginx/nginx.conf
+gzip on;
+gzip_vary on;
+gzip_proxied any;
+gzip_comp_level 6;
+gzip_types text/plain text/css text/xml text/javascript 
+           application/json application/javascript application/xml+rss 
+           application/rss+xml font/truetype font/opentype 
+           application/vnd.ms-fontobject image/svg+xml;
+```
+
+**Fix for Apache:**
+```apache
+# .htaccess
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css
+  AddOutputFilterByType DEFLATE application/javascript application/json
+  AddOutputFilterByType DEFLATE image/svg+xml
+</IfModule>
+```
+
+**Fix for Cloudflare/Vercel/Netlify:**
+
+Compression is enabled by default. Ensure it's not disabled in settings.
+</Accordion>
+
+<Note>
+**Brotli vs Gzip**: Brotli compresses 15-20% better than gzip but requires more CPU. Use Brotli for static assets, gzip as fallback.
+</Note>
+
+## JavaScript & CSS Optimization
+
+### Rule: `perf/js-minify`
+
+**What it checks:**
+- JavaScript files are minified
+- No inline comments in production
+- No console.log statements
+- Dead code eliminated
+
+**Why it matters:**
+Minification removes unnecessary characters (whitespace, comments, long variable names), reducing file size by 30-50%.
+
+<Accordion title="Common Issues">
+**Issue: Unminified JavaScript (3866.6 KB with ~2922.3 KB savings possible, 193 comments found)**
+
+This is a massive performance issue—you're serving nearly 3 MB of unnecessary data.
+
+**Fix:**
+
+```javascript
+// ❌ Bad: Unminified code
+function calculateTotal(items) {
+  // Initialize total to zero
+  let total = 0;
+  
+  // Loop through each item and add to total
+  for (let i = 0; i < items.length; i++) {
+    total += items[i].price;
+  }
+  
+  console.log('Total calculated:', total);
+  return total;
+}
+
+// ✅ Good: Minified code
+function calculateTotal(e){let t=0;for(let l=0;l<e.length;l++)t+=e[l].price;return t}
+```
+
+**Build tools:**
+
+<CodeGroup>
+```bash Webpack
+// webpack.config.js
+module.exports = {
+  mode: 'production', // Enables minification
+  optimization: {
+    minimize: true
+  }
+};
+```
+
+```bash Vite
+// vite.config.js
+export default {
+  build: {
+    minify: 'terser', // or 'esbuild'
+    terserOptions: {
+      compress: {
+        drop_console: true, // Remove console.log
+      }
+    }
+  }
+};
+```
+
+```bash Next.js
+// next.config.js
+module.exports = {
+  swcMinify: true, // Use SWC minifier (faster)
+};
+```
+</CodeGroup>
+</Accordion>
+
+### Rule: `perf/css-size`
+
+**What it checks:**
+- CSS file size (target: &lt;100 KB per file)
+- Unused CSS detected and removed
+- Critical CSS inlined
+- Non-critical CSS deferred
+
+<Accordion title="Common Issues">
+**Issue: CSS file too large (146.2 KB `index-CHQ_j4kp.css`)**
+
+**Solutions:**
+
+1. **Purge unused CSS** with PurgeCSS:
+
+```javascript
+// tailwind.config.js (for Tailwind)
+module.exports = {
+  content: ['./src/**/*.{js,jsx,ts,tsx,html}'],
+  // Automatically purges unused styles
+};
+```
+
+2. **Split critical/non-critical CSS:**
+
+```html
+<!-- Inline critical CSS (above-the-fold) -->
+<style>
+  /* Critical styles for header, hero, CTA */
+  .hero { background: #000; color: #fff; }
+</style>
+
+<!-- Defer non-critical CSS -->
+<link rel="preload" href="/styles.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="/styles.css"></noscript>
+```
+
+3. **Code split by route:**
+
+```javascript
+// Next.js example
+import dynamic from 'next/dynamic';
+
+const HeavyComponent = dynamic(() => import('./HeavyComponent'), {
+  loading: () => <p>Loading...</p>,
+});
+```
+</Accordion>
+
+## Caching
+
+### Rule: `perf/cache-headers`
+
+**What it checks:**
+- Cache-Control headers present
+- Appropriate cache durations
+- Immutable assets properly cached
+- No caching on dynamic content
+
+**Why it matters:**
+Proper caching reduces server load and speeds up repeat visits by 80-90%.
+
+<Accordion title="Common Issues">
+**Issue: No cache headers (Zero caching on static assets)**
+
+**Fix for Nginx:**
+
+```nginx
+location ~* \.(jpg|jpeg|png|gif|ico|svg|webp)$ {
+  expires 1y;
+  add_header Cache-Control "public, immutable";
+}
+
+location ~* \.(css|js)$ {
+  expires 1y;
+  add_header Cache-Control "public, immutable";
+}
+
+location ~* \.(woff|woff2|ttf|otf|eot)$ {
+  expires 1y;
+  add_header Cache-Control "public, immutable";
+}
+```
+
+**Fix for Vercel/Next.js:**
+
+```javascript
+// next.config.js
+module.exports = {
+  async headers() {
+    return [
+      {
+        source: '/static/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+    ];
+  },
+};
+```
+
+**Recommended Cache Durations:**
+
+| Resource Type | Cache Duration | Cache-Control |
+|---------------|----------------|---------------|
+| Immutable assets (versioned) | 1 year | `public, max-age=31536000, immutable` |
+| Images | 1 year | `public, max-age=31536000` |
+| Fonts | 1 year | `public, max-age=31536000` |
+| CSS/JS (versioned) | 1 year | `public, max-age=31536000, immutable` |
+| HTML | No cache or short | `no-cache` or `max-age=3600` |
+| API responses | Varies | `private, max-age=300` (5 min) |
+</Accordion>
+
+<Warning>
+Never cache HTML pages for long periods. Use `no-cache` or short durations (1 hour max) to ensure users get updates.
+</Warning>
+
+## Page Weight
+
+### Rule: `perf/page-weight`
+
+**What it checks:**
+- Total page size (target: &lt;2 MB)
+- Number of requests (target: &lt;50)
+- Largest Contentful Paint (LCP) element size
+
+<Accordion title="Common Issues">
+**Issue: Heavy page weight (4013 KB total resources)**
+
+Target: &lt;2000 KB
+
+**Solutions:**
+
+1. **Optimize images:**
+   - Use WebP/AVIF formats (60-80% smaller than JPEG/PNG)
+   - Compress images (TinyPNG, ImageOptim)
+   - Serve responsive images with `srcset`
+   - Lazy load below-the-fold images
+
+2. **Tree-shake JavaScript:**
+   ```javascript
+   // ❌ Bad: Import entire library
+   import _ from 'lodash';
+   
+   // ✅ Good: Import only what you need
+   import debounce from 'lodash/debounce';
+   ```
+
+3. **Code split by route:**
+   - Only load code needed for current page
+   - Lazy load modals, tooltips, charts
+
+4. **Remove unused dependencies:**
+   ```bash
+   npm install -g depcheck
+   depcheck
+   ```
+</Accordion>
+
+## Critical Rendering Path
+
+### Rule: `perf/render-blocking`
+
+**What it checks:**
+- CSS doesn't block rendering
+- JavaScript is deferred or async
+- Critical resources loaded first
+
+**Why it matters:**
+Render-blocking resources delay the First Contentful Paint (FCP) and Largest Contentful Paint (LCP), hurting Core Web Vitals scores.
+
+<Accordion title="Fix Render-Blocking Resources">
+**Issue: Critical request chain (CSS blocks rendering)**
+
+**Solutions:**
+
+1. **Inline critical CSS:**
+
+```html
+<head>
+  <style>
+    /* Critical above-the-fold CSS */
+    body { margin: 0; font-family: sans-serif; }
+    .hero { min-height: 100vh; background: #000; }
+  </style>
+  
+  <!-- Defer non-critical CSS -->
+  <link rel="preload" href="/styles.css" as="style" onload="this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="/styles.css"></noscript>
+</head>
+```
+
+2. **Defer JavaScript:**
+
+```html
+<!-- ❌ Bad: Blocks rendering -->
+<script src="/app.js"></script>
+
+<!-- ✅ Good: Deferred -->
+<script src="/app.js" defer></script>
+
+<!-- ✅ Good: Async (for non-critical scripts) -->
+<script src="/analytics.js" async></script>
+```
+
+3. **Preload critical resources:**
+
+```html
+<link rel="preload" href="/hero-image.webp" as="image">
+<link rel="preload" href="/critical-font.woff2" as="font" type="font/woff2" crossorigin>
+```
+</Accordion>
+
+## Source Maps in Production
+
+### Rule: `perf/source-maps`
+
+**What it checks:**
+- No .map files exposed in production
+- Source maps not referenced in production builds
+
+**Why it matters:**
+Source maps expose your original source code, increasing page weight and revealing implementation details.
+
+<Accordion title="Fix Source Maps">
+**Issue: Source maps exposed (Production source maps accessible)**
+
+**Remove source maps from production:**
+
+<CodeGroup>
+```javascript webpack.config.js
+module.exports = {
+  mode: 'production',
+  devtool: false, // Disable source maps
+};
+```
+
+```javascript vite.config.js
+export default {
+  build: {
+    sourcemap: false, // Disable source maps
+  }
+};
+```
+
+```javascript next.config.js
+module.exports = {
+  productionBrowserSourceMaps: false,
+};
+```
+</CodeGroup>
+
+**Alternative: Upload source maps to error tracking (without exposing them):**
+
+```bash
+# Sentry example
+sentry-cli sourcemaps upload --org=my-org --project=my-project ./dist
+```
+</Accordion>
+
+## Core Web Vitals
+
+### What they measure:
+
+<Accordion title="Largest Contentful Paint (LCP)">
+**Target: &lt;2.5 seconds**
+
+Measures when the largest content element becomes visible.
+
+**Common issues:**
+- Large images without optimization
+- Render-blocking CSS/JS
+- Slow server response time
+
+**Fixes:**
+- Optimize images (WebP, compression, lazy loading)
+- Use CDN for static assets
+- Inline critical CSS
+- Preload LCP image: `<link rel="preload" href="hero.jpg" as="image">`
+</Accordion>
+
+<Accordion title="First Input Delay (FID)">
+**Target: &lt;100 milliseconds**
+
+Measures time from first user interaction to browser response.
+
+**Common issues:**
+- Heavy JavaScript execution blocking main thread
+- Long tasks (>50ms)
+
+**Fixes:**
+- Break up long tasks
+- Defer non-critical JavaScript
+- Use Web Workers for heavy computation
+- Code split to reduce initial JS payload
+</Accordion>
+
+<Accordion title="Cumulative Layout Shift (CLS)">
+**Target: &lt;0.1**
+
+Measures visual stability (unexpected layout shifts).
+
+**Common issues:**
+- Images without dimensions
+- Ads/embeds inserted dynamically
+- Web fonts causing FOIT/FOUT
+
+**Fixes:**
+- Set width/height on images: `<img width="800" height="600" ...>`
+- Reserve space for ads/embeds with CSS
+- Use `font-display: swap` for web fonts
+- Preload fonts: `<link rel="preload" href="font.woff2" as="font" crossorigin>`
+</Accordion>
+
+## Testing Performance
+
+<CardGroup cols={2}>
+  <Card title="PageSpeed Insights" icon="gauge-high" href="https://pagespeed.web.dev/">
+    Google's official tool for Core Web Vitals and performance metrics
+  </Card>
+  <Card title="WebPageTest" icon="chart-line" href="https://www.webpagetest.org/">
+    Detailed waterfall charts and filmstrip view
+  </Card>
+  <Card title="Lighthouse" icon="lighthouse" href="https://developers.google.com/web/tools/lighthouse">
+    Built into Chrome DevTools, comprehensive audits
+  </Card>
+  <Card title="GTmetrix" icon="stopwatch" href="https://gtmetrix.com/">
+    Performance reports with actionable recommendations
+  </Card>
+</CardGroup>
+
+## Quick Reference
+
+| Metric | Target | Critical |
+|--------|--------|----------|
+| Page size | &lt;2 MB | &lt;3 MB |
+| Requests | &lt;50 | &lt;100 |
+| LCP | &lt;2.5s | &lt;4s |
+| FID | &lt;100ms | &lt;300ms |
+| CLS | &lt;0.1 | &lt;0.25 |
+| Time to Interactive | &lt;3.8s | &lt;7.3s |
+
+## Related Pages
+
+<CardGroup cols={2}>
+  <Card title="Security Rules" icon="shield" href="/reference/rules/security">
+    Security headers, HTTPS, and vulnerability protection
+  </Card>
+  <Card title="Technical SEO" icon="gear" href="/reference/rules/technical-seo">
+    Sitemaps, robots.txt, and crawlability
+  </Card>
+  <Card title="Running Audits" icon="play" href="/auditing/running-audits">
+    Learn how to run performance audits
+  </Card>
+  <Card title="Interpreting Results" icon="chart-line" href="/auditing/interpreting-results">
+    Understand performance scores and prioritize fixes
+  </Card>
+</CardGroup>

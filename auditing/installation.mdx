@@ -1,0 +1,422 @@
+---
+title: 'Installation'
+description: 'Install the squirrel CLI on Linux, Mac, or Windows and set up your first audit project.'
+keywords: ['install squirrel', 'squirrel CLI', 'setup', 'installation guide']
+icon: 'download'
+---
+
+# Installation
+
+Install the squirrel CLI to start auditing websites for SEO, performance, security, and technical issues.
+
+<Note>
+  squirrel is available for **Linux**, **macOS**, and **Windows** with automatic PATH configuration.
+</Note>
+
+## Installing squirrel CLI
+
+<Tabs>
+  <Tab title="Linux / macOS" icon="linux">
+    Install using the automated installer script:
+    
+    ```bash
+    curl -fsSL https://squirrelscan.com/install | bash
+    ```
+    
+    ### What this does
+    
+    The installer will:
+    
+    <Steps>
+      <Step title="Download the latest binary">
+        Fetches the appropriate release for your system architecture
+      </Step>
+      <Step title="Install to local directory">
+        Installs to `~/.local/share/squirrel/releases/{version}/`
+      </Step>
+      <Step title="Create symbolic link">
+        Creates a symlink at `~/.local/bin/squirrel`
+      </Step>
+      <Step title="Initialize settings">
+        Creates default settings at `~/.squirrel/settings.json`
+      </Step>
+    </Steps>
+    
+    ### Add to PATH
+    
+    If `~/.local/bin` is not in your PATH, add it to your shell configuration:
+    
+    <CodeGroup>
+    ```bash Bash (~/.bashrc)
+    echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
+    source ~/.bashrc
+    ```
+    
+    ```bash Zsh (~/.zshrc)
+    echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc
+    source ~/.zshrc
+    ```
+    
+    ```bash Fish (~/.config/fish/config.fish)
+    fish_add_path ~/.local/bin
+    ```
+    </CodeGroup>
+  </Tab>
+  
+  <Tab title="Windows" icon="windows">
+    Install using PowerShell:
+    
+    ```powershell
+    irm https://squirrelscan.com/install.ps1 | iex
+    ```
+    
+    ### What this does
+    
+    The installer will:
+    
+    <Steps>
+      <Step title="Download the latest binary">
+        Fetches the Windows release
+      </Step>
+      <Step title="Install to local directory">
+        Installs to `%LOCALAPPDATA%\squirrel\`
+      </Step>
+      <Step title="Update PATH variable">
+        Adds squirrel to your PATH automatically
+      </Step>
+    </Steps>
+    
+    <Warning>
+      **Command Prompt users**: You may need to restart your terminal for PATH changes to take effect.
+    </Warning>
+    
+    ### Alternative: Manual installation
+    
+    If you prefer to install manually:
+    
+    1. Download the Windows binary from [squirrelscan.com](https://squirrelscan.com)
+    2. Extract to a directory (e.g., `C:\Program Files\squirrel`)
+    3. Add the directory to your PATH:
+       - Open System Properties → Environment Variables
+       - Edit the PATH variable
+       - Add the squirrel directory
+  </Tab>
+</Tabs>
+
+## Verifying installation
+
+Confirm that squirrel is installed and accessible:
+
+<Steps>
+  <Step title="Check version">
+    ```bash
+    squirrel --version
+    ```
+    
+    You should see output like:
+    ```
+    squirrel 1.18.0
+    ```
+  </Step>
+  
+  <Step title="View help">
+    ```bash
+    squirrel --help
+    ```
+    
+    This displays all available commands and options.
+  </Step>
+</Steps>
+
+<Check>
+  If both commands work, squirrel is installed correctly!
+</Check>
+
+### Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Command not found error" icon="circle-exclamation">
+    If you see `squirrel: command not found` or similar:
+    
+    **Check installation location:**
+    ```bash
+    ls ~/.local/bin/squirrel  # Linux/Mac
+    dir %LOCALAPPDATA%\squirrel  # Windows
+    ```
+    
+    **Verify PATH:**
+    ```bash
+    echo $PATH  # Linux/Mac
+    echo %PATH%  # Windows
+    ```
+    
+    The squirrel installation directory should appear in the output.
+    
+    **Solution:** Add `~/.local/bin` (or the Windows equivalent) to your PATH as shown in the installation steps above.
+  </Accordion>
+  
+  <Accordion title="Permission denied error" icon="lock">
+    If squirrel is not executable:
+    
+    ```bash
+    chmod +x ~/.local/bin/squirrel
+    ```
+  </Accordion>
+  
+  <Accordion title="SSL/Certificate errors" icon="certificate">
+    If the installer fails with SSL errors:
+    
+    - **Linux/Mac**: Ensure `curl` is up to date
+    - **Windows**: Ensure PowerShell can make HTTPS requests
+    
+    Try downloading the binary manually from [squirrelscan.com](https://squirrelscan.com) and following manual installation steps.
+  </Accordion>
+</AccordionGroup>
+
+## Setting up a project
+
+Before running audits, initialize a squirrel project in your working directory.
+
+### Why initialize?
+
+Running `squirrel init` creates a `squirrel.toml` configuration file that:
+
+- Sets the project name for database organization
+- Stores audit results in `~/.squirrel/projects/<project-name>`
+- Allows you to manage multiple audit projects separately
+
+### Initialize with default settings
+
+<Steps>
+  <Step title="Navigate to your project directory">
+    ```bash
+    cd /path/to/your/project
+    ```
+  </Step>
+  
+  <Step title="Run init command">
+    ```bash
+    squirrel init
+    ```
+    
+    This creates a `squirrel.toml` file with default settings. The project name will be inferred from the first website you audit.
+  </Step>
+</Steps>
+
+### Initialize with custom project name
+
+For better organization, specify a project name:
+
+<CodeGroup>
+```bash Using --project-name
+squirrel init --project-name my-website-audit
+```
+
+```bash Using -n alias
+squirrel init -n my-website-audit
+```
+
+```bash Overwrite existing config
+squirrel init -n my-website-audit --force
+```
+</CodeGroup>
+
+<Tip>
+  **Use meaningful project names** like `company-marketing-site` or `ecommerce-platform` to keep audits organized.
+</Tip>
+
+### Project name importance
+
+The project name determines where audit data is stored:
+
+```
+~/.squirrel/projects/
+├── my-website-audit/
+│   ├── audits.db
+│   └── cache/
+├── another-project/
+│   ├── audits.db
+│   └── cache/
+```
+
+<Info>
+  **All audits for the same project share a database**, allowing you to track changes over time and compare historical results.
+</Info>
+
+## Configuration with squirrel.toml
+
+The `squirrel.toml` file stores project-specific settings.
+
+### Example configuration
+
+```toml squirrel.toml
+[project]
+name = "my-website-audit"
+
+[crawl]
+max_pages = 100
+coverage = "surface"
+user_agent = "squirrel/1.18 (Website Audit)"
+
+[audit]
+ignore_rules = []
+min_score = 85
+```
+
+### Configuration management
+
+Use the `config` subcommands to manage settings:
+
+<Tabs>
+  <Tab title="View config">
+    ```bash
+    squirrel config show
+    ```
+    
+    Displays the current configuration.
+  </Tab>
+  
+  <Tab title="Set values">
+    ```bash
+    # Set project name
+    squirrel config set project.name my-project
+    
+    # Set default coverage mode
+    squirrel config set crawl.coverage full
+    
+    # Set max pages
+    squirrel config set crawl.max_pages 200
+    ```
+  </Tab>
+  
+  <Tab title="Show path">
+    ```bash
+    squirrel config path
+    ```
+    
+    Shows the location of the config file.
+  </Tab>
+  
+  <Tab title="Validate">
+    ```bash
+    squirrel config validate
+    ```
+    
+    Checks if the config file is valid.
+  </Tab>
+</Tabs>
+
+### Common configuration options
+
+<ParamField path="project.name" type="string" required>
+  Project identifier for database storage
+</ParamField>
+
+<ParamField path="crawl.max_pages" type="number" default="100">
+  Maximum pages to crawl per audit (up to 5000)
+</ParamField>
+
+<ParamField path="crawl.coverage" type="string" default="surface">
+  Coverage mode: `quick`, `surface`, or `full`
+</ParamField>
+
+<ParamField path="crawl.user_agent" type="string">
+  Custom user agent string for crawling
+</ParamField>
+
+<ParamField path="audit.ignore_rules" type="array" default="[]">
+  List of rule IDs to skip during audits
+</ParamField>
+
+<ParamField path="audit.min_score" type="number" default="0">
+  Minimum acceptable health score
+</ParamField>
+
+## Self-management commands
+
+squirrel includes built-in commands for managing the CLI itself:
+
+<CardGroup cols={2}>
+  <Card title="Update" icon="arrow-up">
+    ```bash
+    squirrel self update
+    ```
+    
+    Check for and apply updates
+  </Card>
+  
+  <Card title="Doctor" icon="stethoscope">
+    ```bash
+    squirrel self doctor
+    ```
+    
+    Run health checks on installation
+  </Card>
+  
+  <Card title="Version" icon="tag">
+    ```bash
+    squirrel self version
+    ```
+    
+    Show detailed version information
+  </Card>
+  
+  <Card title="Settings" icon="gear">
+    ```bash
+    squirrel self settings
+    ```
+    
+    Manage global CLI settings
+  </Card>
+  
+  <Card title="Completion" icon="terminal">
+    ```bash
+    squirrel self completion
+    ```
+    
+    Generate shell completions
+  </Card>
+  
+  <Card title="Uninstall" icon="trash">
+    ```bash
+    squirrel self uninstall
+    ```
+    
+    Remove squirrel from the system
+  </Card>
+</CardGroup>
+
+### Shell completions
+
+Enable tab completion for your shell:
+
+<CodeGroup>
+```bash Bash
+squirrel self completion bash > ~/.local/share/bash-completion/completions/squirrel
+source ~/.bashrc
+```
+
+```bash Zsh
+squirrel self completion zsh > ~/.zsh/completions/_squirrel
+source ~/.zshrc
+```
+
+```bash Fish
+squirrel self completion fish > ~/.config/fish/completions/squirrel.fish
+```
+</CodeGroup>
+
+## Next steps
+
+<Check>
+  You're ready to run your first audit!
+</Check>
+
+<CardGroup cols={2}>
+  <Card title="Run your first audit" icon="play" href="/auditing/running-audits">
+    Learn how to audit websites with different coverage modes
+  </Card>
+  <Card title="Audit categories" icon="grid" href="/auditing/audit-categories">
+    Explore the 21 audit categories and 230+ rules
+  </Card>
+</CardGroup>

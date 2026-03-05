@@ -1,0 +1,433 @@
+---
+title: "Security Rules"
+description: "Reference guide for security audit rules including HTTPS, security headers, and vulnerability protection"
+---
+
+## Overview
+
+Security rules protect your website and users from common attacks, data breaches, and vulnerabilities. Proper security also builds trust and is a ranking factor for search engines.
+
+<Warning>
+Security issues should be treated as high priority. A single vulnerability can compromise your entire site and user data.
+</Warning>
+
+## HTTPS Enforcement
+
+### Rule: `security/https`
+
+**What it checks:**
+- Site served over HTTPS (not HTTP)
+- Valid SSL/TLS certificate
+- No mixed content (HTTP resources on HTTPS pages)
+- HTTPS redirect from HTTP
+
+**Why it matters:**
+HTTPS encrypts data between users and your server, preventing eavesdropping and man-in-the-middle attacks. Google requires HTTPS for ranking.
+
+<Accordion title="Enable HTTPS">
+**Steps:**
+
+1. **Get an SSL certificate:**
+   - Free: [Let's Encrypt](https://letsencrypt.org/)
+   - Paid: DigiCert, Sectigo, GlobalSign
+   - Automatic: Cloudflare, Netlify, Vercel (free)
+
+2. **Install certificate on server:**
+
+```nginx
+# Nginx configuration
+server {
+  listen 443 ssl http2;
+  server_name example.com;
+  
+  ssl_certificate /path/to/fullchain.pem;
+  ssl_certificate_key /path/to/privkey.pem;
+  
+  # Modern TLS configuration
+  ssl_protocols TLSv1.2 TLSv1.3;
+  ssl_ciphers HIGH:!aNULL:!MD5;
+  ssl_prefer_server_ciphers on;
+}
+
+# Redirect HTTP to HTTPS
+server {
+  listen 80;
+  server_name example.com;
+  return 301 https://$server_name$request_uri;
+}
+```
+
+3. **Fix mixed content:**
+
+```html
+<!-- ❌ Bad: HTTP resource on HTTPS page -->
+<img src="http://example.com/image.jpg">
+<script src="http://cdn.example.com/script.js"></script>
+
+<!-- ✅ Good: HTTPS or protocol-relative URLs -->
+<img src="https://example.com/image.jpg">
+<script src="https://cdn.example.com/script.js"></script>
+```
+</Accordion>
+
+## Security Headers
+
+### Rule: `security/headers`
+
+**What it checks:**
+- Content-Security-Policy (CSP)
+- Strict-Transport-Security (HSTS)
+- X-Frame-Options
+- X-Content-Type-Options
+- Referrer-Policy
+- Permissions-Policy
+
+**Why it matters:**
+Security headers provide defense-in-depth against XSS, clickjacking, and other attacks.
+
+### Content-Security-Policy (CSP)
+
+<Accordion title="CSP Configuration">
+**What it prevents:**
+- Cross-Site Scripting (XSS) attacks
+- Data injection attacks
+- Unauthorized script execution
+
+**Missing CSP = Critical vulnerability**
+
+**Basic CSP:**
+
+```nginx
+# Nginx
+add_header Content-Security-Policy "default-src 'self'; script-src 'self' https://trusted-cdn.com; style-src 'self' 'unsafe-inline'; img-src 'self' https: data:; font-src 'self'; connect-src 'self' https://api.example.com;" always;
+```
+
+```html
+<!-- HTML meta tag -->
+<meta http-equiv="Content-Security-Policy" 
+      content="default-src 'self'; script-src 'self' https://trusted-cdn.com; style-src 'self' 'unsafe-inline';">
+```
+
+**CSP Directives:**
+
+| Directive | Purpose | Example |
+|-----------|---------|----------|
+| `default-src` | Fallback for all resources | `'self'` |
+| `script-src` | JavaScript sources | `'self' https://cdn.com` |
+| `style-src` | CSS sources | `'self' 'unsafe-inline'` |
+| `img-src` | Image sources | `'self' https: data:` |
+| `font-src` | Font sources | `'self' https://fonts.gstatic.com` |
+| `connect-src` | AJAX/fetch/WebSocket | `'self' https://api.example.com` |
+| `frame-ancestors` | Who can embed page | `'none'` or `'self'` |
+
+**Testing CSP:**
+
+Start with report-only mode:
+
+```nginx
+add_header Content-Security-Policy-Report-Only "default-src 'self'; report-uri https://example.com/csp-report;";
+```
+
+Monitor reports, fix violations, then enforce.
+</Accordion>
+
+### Strict-Transport-Security (HSTS)
+
+<Accordion title="HSTS Configuration">
+**What it prevents:**
+- Downgrade attacks (forcing HTTP)
+- SSL stripping
+- Cookie hijacking
+
+**Missing HSTS = Downgrade attack risk**
+
+**Configuration:**
+
+```nginx
+# Nginx
+add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;
+```
+
+```apache
+# Apache
+Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+```
+
+**Parameters:**
+- `max-age=31536000`: 1 year (in seconds)
+- `includeSubDomains`: Apply to all subdomains
+- `preload`: Submit to HSTS preload list
+
+**HSTS Preload List:**
+
+Submit your domain to [hstspreload.org](https://hstspreload.org/) to be included in browsers' built-in HSTS lists.
+
+<Warning>
+HSTS preload is difficult to undo. Ensure all subdomains support HTTPS before submitting.
+</Warning>
+</Accordion>
+
+### X-Frame-Options
+
+<Accordion title="X-Frame-Options Configuration">
+**What it prevents:**
+- Clickjacking attacks
+- UI redressing
+- Iframe embedding attacks
+
+**Missing X-Frame-Options = Clickjacking risk**
+
+**Configuration:**
+
+```nginx
+# Nginx - Deny all framing
+add_header X-Frame-Options "DENY" always;
+
+# Or allow same-origin framing only
+add_header X-Frame-Options "SAMEORIGIN" always;
+```
+
+**Options:**
+- `DENY`: Cannot be framed by anyone
+- `SAMEORIGIN`: Can only be framed by same domain
+- `ALLOW-FROM uri`: Deprecated, use CSP `frame-ancestors` instead
+
+**Modern alternative (CSP):**
+
+```nginx
+# Use CSP frame-ancestors instead
+add_header Content-Security-Policy "frame-ancestors 'none';" always;
+# Or
+add_header Content-Security-Policy "frame-ancestors 'self';" always;
+```
+</Accordion>
+
+### X-Content-Type-Options
+
+<Accordion title="X-Content-Type-Options Configuration">
+**What it prevents:**
+- MIME type sniffing attacks
+- Script execution from non-script files
+
+**Configuration:**
+
+```nginx
+# Nginx
+add_header X-Content-Type-Options "nosniff" always;
+```
+
+This forces browsers to respect the `Content-Type` header and prevents executing scripts from files with incorrect MIME types.
+</Accordion>
+
+### Referrer-Policy
+
+<Accordion title="Referrer-Policy Configuration">
+**What it controls:**
+- How much referrer information is sent with requests
+- Privacy and security of outbound links
+
+**Configuration:**
+
+```nginx
+# Nginx - Recommended policy
+add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+```
+
+**Options:**
+- `no-referrer`: Never send referrer
+- `same-origin`: Send referrer to same origin only
+- `strict-origin`: Send origin only on HTTPS → HTTPS
+- `strict-origin-when-cross-origin`: Full URL for same-origin, origin only for cross-origin (recommended)
+</Accordion>
+
+## Complete Security Headers Example
+
+```nginx
+# Nginx - Complete security headers
+server {
+  listen 443 ssl http2;
+  server_name example.com;
+  
+  # SSL configuration
+  ssl_certificate /path/to/fullchain.pem;
+  ssl_certificate_key /path/to/privkey.pem;
+  ssl_protocols TLSv1.2 TLSv1.3;
+  
+  # Security headers
+  add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;
+  add_header X-Frame-Options "DENY" always;
+  add_header X-Content-Type-Options "nosniff" always;
+  add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+  add_header Permissions-Policy "geolocation=(), microphone=(), camera=()" always;
+  add_header Content-Security-Policy "default-src 'self'; script-src 'self' https://trusted-cdn.com; style-src 'self' 'unsafe-inline'; img-src 'self' https: data:; font-src 'self'; connect-src 'self' https://api.example.com; frame-ancestors 'none';" always;
+  
+  # ... rest of configuration
+}
+```
+
+## Cookie Security
+
+### Rule: `security/cookies`
+
+**What it checks:**
+- Secure flag on cookies (HTTPS only)
+- HttpOnly flag (prevents JavaScript access)
+- SameSite attribute (CSRF protection)
+
+<Accordion title="Secure Cookie Configuration">
+```javascript
+// ❌ Bad: Insecure cookies
+document.cookie = "session=abc123";
+
+// ✅ Good: Secure cookies (server-side)
+Set-Cookie: session=abc123; Secure; HttpOnly; SameSite=Strict; Path=/; Max-Age=3600
+```
+
+**Cookie attributes:**
+- `Secure`: Only sent over HTTPS
+- `HttpOnly`: Not accessible via JavaScript (prevents XSS)
+- `SameSite=Strict`: Only sent on same-site requests (prevents CSRF)
+- `SameSite=Lax`: Sent on top-level navigation from same site
+- `SameSite=None`: Requires `Secure` flag
+
+**Express.js example:**
+
+```javascript
+app.use(session({
+  secret: 'your-secret-key',
+  cookie: {
+    secure: true,       // HTTPS only
+    httpOnly: true,     // No JavaScript access
+    sameSite: 'strict', // CSRF protection
+    maxAge: 3600000     // 1 hour
+  }
+}));
+```
+</Accordion>
+
+## Sensitive Data Exposure
+
+### Rule: `security/secrets`
+
+**What it checks:**
+- No API keys in HTML/JavaScript
+- No credentials in source code
+- No leaked secrets in error messages
+
+<Accordion title="Prevent Secret Leaks">
+**Common leaks:**
+
+```javascript
+// ❌ Bad: API key exposed in frontend
+const API_KEY = 'sk_live_abc123xyz';
+fetch(`https://api.stripe.com/v1/charges?api_key=${API_KEY}`);
+
+// ✅ Good: API key on backend only
+// Backend (Node.js)
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+
+// Frontend
+fetch('/api/create-charge', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ amount: 1000 })
+});
+```
+
+**Use environment variables:**
+
+```bash
+# .env (never commit to git)
+DATABASE_URL=postgresql://user:pass@localhost/db
+API_SECRET_KEY=your-secret-key
+STRIPE_SECRET_KEY=sk_live_abc123xyz
+```
+
+```javascript
+// Load from environment
+require('dotenv').config();
+const apiKey = process.env.API_SECRET_KEY;
+```
+
+**Add to .gitignore:**
+
+```bash
+# .gitignore
+.env
+.env.local
+.env.*.local
+secrets/
+```
+</Accordion>
+
+## Testing Security
+
+<CardGroup cols={2}>
+  <Card title="Security Headers" icon="shield-check" href="https://securityheaders.com/">
+    Test your site's security headers and get a grade
+  </Card>
+  <Card title="Mozilla Observatory" icon="satellite" href="https://observatory.mozilla.org/">
+    Comprehensive security scan including TLS, headers, and more
+  </Card>
+  <Card title="SSL Labs" icon="lock" href="https://www.ssllabs.com/ssltest/">
+    Deep analysis of SSL/TLS configuration
+  </Card>
+  <Card title="CSP Evaluator" icon="code" href="https://csp-evaluator.withgoogle.com/">
+    Test and validate your Content Security Policy
+  </Card>
+</CardGroup>
+
+## Security Checklist
+
+<Steps>
+  <Step title="Enable HTTPS">
+    - Get SSL certificate (Let's Encrypt is free)
+    - Redirect HTTP → HTTPS
+    - Fix mixed content warnings
+  </Step>
+  
+  <Step title="Add Security Headers">
+    - Strict-Transport-Security (HSTS)
+    - Content-Security-Policy (CSP)
+    - X-Frame-Options
+    - X-Content-Type-Options
+    - Referrer-Policy
+  </Step>
+  
+  <Step title="Secure Cookies">
+    - Set Secure flag (HTTPS only)
+    - Set HttpOnly flag (prevent XSS)
+    - Set SameSite attribute (prevent CSRF)
+  </Step>
+  
+  <Step title="Protect Secrets">
+    - Never commit secrets to git
+    - Use environment variables
+    - Keep API keys on backend only
+    - Rotate credentials regularly
+  </Step>
+  
+  <Step title="Test & Monitor">
+    - Run security audits regularly
+    - Monitor for vulnerabilities
+    - Keep dependencies updated
+    - Set up security alerts
+  </Step>
+</Steps>
+
+## Related Pages
+
+<CardGroup cols={2}>
+  <Card title="Performance Rules" icon="gauge-high" href="/reference/rules/performance">
+    Page speed, compression, and optimization
+  </Card>
+  <Card title="Accessibility Rules" icon="universal-access" href="/reference/rules/accessibility">
+    WCAG compliance and inclusive design
+  </Card>
+  <Card title="Running Audits" icon="play" href="/auditing/running-audits">
+    Learn how to run security audits
+  </Card>
+  <Card title="Interpreting Results" icon="chart-line" href="/auditing/interpreting-results">
+    Understand security scores and fix vulnerabilities
+  </Card>
+</CardGroup>

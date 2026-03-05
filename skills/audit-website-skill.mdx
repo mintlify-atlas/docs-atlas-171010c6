@@ -1,0 +1,718 @@
+---
+title: 'Website Audit Skill'
+description: 'Audit websites for SEO, performance, security, and 230+ rules using the squirrelscan CLI'
+---
+
+# audit-website Skill
+
+The audit-website skill enables AI agents to perform comprehensive website audits using the squirrelscan CLI. It checks 230+ rules across 21 categories including SEO, performance, security, accessibility, and content quality.
+
+## What This Skill Does
+
+This skill gives agents the ability to:
+
+- **Audit websites** against 230+ rules in 21 categories
+- **Generate LLM-optimized reports** with health scores and recommendations
+- **Detect broken links** (internal and external)
+- **Analyze meta tags** and structured data
+- **Identify technical issues** like redirect chains and page speed problems
+- **Check security** for leaked secrets, HTTPS usage, and security headers
+- **Validate accessibility** including alt text and color contrast
+- **Compare audits** to detect regressions over time
+
+### Audit Categories
+
+The skill covers 21 comprehensive categories:
+
+<AccordionGroup>
+  <Accordion title="SEO Issues">
+    - Meta tags, titles, descriptions
+    - Canonical URLs
+    - Open Graph tags
+    - Keyword optimization
+    - Content structure
+  </Accordion>
+  
+  <Accordion title="Technical Problems">
+    - Broken links
+    - Redirect chains
+    - Page speed
+    - Mobile-friendliness
+    - Crawlability
+  </Accordion>
+  
+  <Accordion title="Performance">
+    - Page load time
+    - Resource usage
+    - Caching strategies
+    - Image optimization
+  </Accordion>
+  
+  <Accordion title="Security">
+    - Leaked secrets
+    - HTTPS usage
+    - Security headers
+    - Mixed content
+  </Accordion>
+  
+  <Accordion title="Content Quality">
+    - Heading structure (H1-H6)
+    - Image alt text
+    - Content analysis
+    - E-E-A-T signals
+  </Accordion>
+  
+  <Accordion title="Additional Categories">
+    - Accessibility
+    - Usability
+    - Mobile optimization
+    - Schema markup
+    - Legal compliance
+    - Social media tags
+    - Local SEO
+    - Video optimization
+  </Accordion>
+</AccordionGroup>
+
+## When to Use This Skill
+
+Use the audit-website skill when you need to:
+
+- Analyze overall website health
+- Debug technical SEO issues
+- Find and fix broken links
+- Validate meta tags and structured data
+- Generate comprehensive audit reports
+- Compare site health before and after changes
+- Improve performance, accessibility, or security
+- Prepare for a product launch
+- Monitor website quality over time
+
+<Note>
+  Re-audit frequently to ensure your website remains healthy. The skill is designed for iterative improvement.
+</Note>
+
+## Installation
+
+### Prerequisites
+
+This skill requires the **squirrel CLI** to be installed and accessible in your PATH.
+
+<Warning>
+  The skill will not work without squirrel installed. Follow the installation steps below.
+</Warning>
+
+### macOS and Linux Installation
+
+<Steps>
+  <Step title="Install squirrel">
+    Run the installation script:
+    
+    ```bash
+    curl -fsSL https://squirrelscan.com/install | bash
+    ```
+    
+    This will:
+    - Download the latest binary
+    - Install to `~/.local/share/squirrel/releases/{version}/`
+    - Create a symlink at `~/.local/bin/squirrel`
+    - Initialize settings at `~/.squirrel/settings.json`
+  </Step>
+  
+  <Step title="Add to PATH">
+    If `~/.local/bin` is not in your PATH, add it:
+    
+    ```bash
+    # Add to ~/.bashrc or ~/.zshrc
+    export PATH="$HOME/.local/bin:$PATH"
+    
+    # Reload your shell
+    source ~/.bashrc  # or source ~/.zshrc
+    ```
+  </Step>
+  
+  <Step title="Verify Installation">
+    Check that squirrel is working:
+    
+    ```bash
+    squirrel --version
+    ```
+    
+    You should see version information printed.
+  </Step>
+</Steps>
+
+### Windows Installation
+
+<Steps>
+  <Step title="Run PowerShell Installer">
+    Open PowerShell and run:
+    
+    ```powershell
+    irm https://squirrelscan.com/install.ps1 | iex
+    ```
+    
+    This will:
+    - Download the latest Windows binary
+    - Install to `%LOCALAPPDATA%\squirrel\`
+    - Add squirrel to your PATH
+  </Step>
+  
+  <Step title="Restart Terminal">
+    Restart your terminal for PATH changes to take effect
+  </Step>
+  
+  <Step title="Verify Installation">
+    Check that squirrel is working:
+    
+    ```powershell
+    squirrel --version
+    ```
+  </Step>
+</Steps>
+
+## Configuration
+
+### Project Setup
+
+Before auditing, initialize a squirrel project:
+
+```bash
+# Initialize with a project name
+squirrel init --project-name my-website
+
+# Or use short form
+squirrel init -n my-website
+
+# Force overwrite existing config
+squirrel init -n my-website --force
+```
+
+This creates a `squirrel.toml` configuration file.
+
+<Note>
+  The project name identifies the audit database. All audits for a project share the same database, enabling comparison over time.
+</Note>
+
+### Configuration File
+
+The `squirrel.toml` file controls audit behavior:
+
+```toml squirrel.toml
+[project]
+name = "my-website"
+
+[crawl]
+max_pages = 200
+coverage = "surface"  # quick | surface | full
+
+[audit]
+min_score = 85
+```
+
+### Project Database
+
+Audits are stored in: `~/.squirrel/projects/<project-name>`
+
+This enables:
+- Historical comparison
+- Regression detection
+- Report regeneration in different formats
+
+## Usage
+
+### Basic Audit Workflow
+
+The standard audit process:
+
+<CodeGroup>
+```bash Surface Audit (Recommended)
+# Quick surface scan (100 pages)
+squirrel audit https://example.com --format llm
+```
+
+```bash Full Audit
+# Comprehensive deep scan (500 pages)
+squirrel audit https://example.com --coverage full --format llm
+```
+
+```bash Quick Check
+# Fast health check (25 pages, no link discovery)
+squirrel audit https://example.com --coverage quick --format llm
+```
+</CodeGroup>
+
+<Note>
+  Always use `--format llm` for AI agent workflows. This format is optimized for token efficiency and provides exhaustive, structured output.
+</Note>
+
+### Coverage Modes
+
+Choose the right coverage for your needs:
+
+| Mode | Pages | Behavior | Use Case |
+|------|-------|----------|----------|
+| `quick` | 25 | Seed + sitemaps only | CI checks, fast monitoring |
+| `surface` | 100 | One sample per URL pattern | General audits (default) |
+| `full` | 500 | Crawl everything | Deep analysis, pre-launch |
+
+**Surface mode intelligence**: It detects URL patterns like `/blog/{slug}` and only crawls one sample per pattern. This makes it efficient for sites with many similar pages.
+
+### Output Formats
+
+The skill supports multiple formats:
+
+```bash
+# LLM-optimized (best for agents)
+squirrel audit https://example.com --format llm
+
+# Human-readable console
+squirrel audit https://example.com --format console
+
+# JSON for processing
+squirrel audit https://example.com --format json
+
+# HTML report
+squirrel audit https://example.com --format html --output report.html
+```
+
+<Warning>
+  Agents should always use `--format llm`. It's 40% more compact than XML and optimized for AI consumption.
+</Warning>
+
+## Workflow: Audit → Fix → Re-Audit
+
+The skill follows a systematic improvement workflow:
+
+<Steps>
+  <Step title="Initial Audit">
+    Run a surface scan to identify issues:
+    
+    ```bash
+    squirrel audit https://example.com --format llm
+    ```
+    
+    This generates:
+    - Overall health score (0-100)
+    - Category breakdowns
+    - Specific issues with affected URLs
+    - Actionable recommendations
+  </Step>
+  
+  <Step title="Fix Issues">
+    Address all critical errors and warnings:
+    
+    - **Code fixes**: Meta tags, structured data, templates
+    - **Content fixes**: Alt text, headings, descriptions
+    - **Technical fixes**: Broken links, redirects, performance
+    
+    <Note>
+      Don't stop after code fixes. Content changes (*.md, *.mdx) are equally important.
+    </Note>
+  </Step>
+  
+  <Step title="Re-Audit">
+    Verify improvements with a fresh audit:
+    
+    ```bash
+    squirrel audit https://example.com --refresh --format llm
+    ```
+    
+    The `--refresh` flag ignores cache to ensure accurate results.
+  </Step>
+  
+  <Step title="Iterate Until Complete">
+    Continue fixing and re-auditing until:
+    - Score reaches target (typically 85-95+)
+    - Only issues requiring human judgment remain
+    
+    <Warning>
+      A site is only considered **complete and fixed** when scores are **above 95** (Grade A) with `--coverage full`.
+    </Warning>
+  </Step>
+</Steps>
+
+### Score Targets
+
+Set improvement goals based on starting score:
+
+| Starting Score | Target Score | Expected Work |
+|----------------|--------------|---------------|
+| < 50 (Grade F) | 75+ (Grade C) | Major fixes required |
+| 50-70 (Grade D) | 85+ (Grade B) | Moderate fixes needed |
+| 70-85 (Grade C) | 90+ (Grade A) | Polish and refinement |
+| > 85 (Grade B+) | 95+ (Grade A+) | Fine-tuning |
+
+**Don't stop until the target is reached.**
+
+## Parallelizing Fixes with Subagents
+
+The skill leverages subagents to fix issues in parallel, dramatically reducing completion time.
+
+### When to Parallelize
+
+Parallelize when:
+- 5+ files need the same fix type
+- Fixes have no dependencies on each other
+- Files are independent (not importing each other)
+
+### Common Parallelizable Fixes
+
+| Issue Type | Parallelizable | Approach |
+|------------|----------------|----------|
+| Image alt text | ✅ Yes | Spawn subagents per file batch |
+| Heading hierarchy | ✅ Yes | Spawn subagents per file batch |
+| Short descriptions | ✅ Yes | Spawn subagents per file batch |
+| HTTP→HTTPS links | ✅ Yes | Bulk sed/replace |
+| Meta tags/titles | ❌ No | Shared components |
+| Structured data | ❌ No | Single source of truth |
+| Broken links | ❌ No | Requires manual review |
+
+### Parallel Execution Pattern
+
+<Note>
+  Multiple Task tool calls in ONE message = parallel execution. Sequential calls = slower.
+</Note>
+
+**Example: Fixing alt text in 12 files**
+
+Spawn 3 subagents in a single message:
+
+<CodeGroup>
+```markdown Subagent 1
+Fix missing image alt text in these files:
+- content/blog/post-1.md
+- content/blog/post-2.md
+- content/blog/post-3.md
+- content/blog/post-4.md
+
+Find images without alt text (![](path) or <img without alt=).
+Add descriptive alt text based on image filename and context.
+Do not ask for confirmation.
+```
+
+```markdown Subagent 2
+Fix missing image alt text in these files:
+- content/blog/post-5.md
+- content/blog/post-6.md
+- content/blog/post-7.md
+- content/blog/post-8.md
+
+Find images without alt text (![](path) or <img without alt=).
+Add descriptive alt text based on image filename and context.
+Do not ask for confirmation.
+```
+
+```markdown Subagent 3
+Fix missing image alt text in these files:
+- content/blog/post-9.md
+- content/blog/post-10.md
+- content/blog/post-11.md
+- content/blog/post-12.md
+
+Find images without alt text (![](path) or <img without alt=).
+Add descriptive alt text based on image filename and context.
+Do not ask for confirmation.
+```
+</CodeGroup>
+
+### Batch Sizing Guidelines
+
+- **Optimal**: 3-5 files per subagent
+- **Maximum**: 10 files per subagent
+- **Total agents**: Spawn 2-4 subagents for parallel work
+
+### Subagent Prompt Structure
+
+Effective subagent prompts are:
+
+1. **Focused** - Specific file list
+2. **Clear** - Exact pattern to find
+3. **Actionable** - Precise fix instructions
+4. **Autonomous** - "Do not ask for confirmation"
+
+```markdown
+Fix [issue type] in the following files:
+- path/to/file1.md
+- path/to/file2.md
+
+Pattern: [what to find]
+Fix: [what to change]
+
+Do not ask for confirmation. Make all changes and report what was fixed.
+```
+
+## Advanced Options
+
+### Custom Page Limits
+
+```bash
+# Audit more pages than default
+squirrel audit https://example.com --max-pages 200
+
+# Maximum allowed
+squirrel audit https://example.com --max-pages 5000
+```
+
+### Force Fresh Crawl
+
+```bash
+# Ignore cache, fetch all pages fresh
+squirrel audit https://example.com --refresh
+```
+
+### Resume Interrupted Crawl
+
+```bash
+# Continue from where it stopped
+squirrel audit https://example.com --resume
+```
+
+### Debugging
+
+```bash
+# Verbose output
+squirrel audit https://example.com --verbose
+
+# Debug logging
+squirrel audit https://example.com --debug
+
+# Performance tracing
+squirrel audit https://example.com --trace
+```
+
+## Regression Detection
+
+Compare audits to detect regressions:
+
+```bash
+# Compare against a baseline audit ID
+squirrel report --diff <audit-id> --format llm
+
+# Compare against a baseline domain
+squirrel report --regression-since example.com --format llm
+```
+
+Diff mode works with: `console`, `text`, `json`, `llm`, `markdown`
+
+<Warning>
+  Diff mode does not support `html` or `xml` formats.
+</Warning>
+
+## Complete Workflow Example
+
+A real-world audit and fix workflow:
+
+<Steps>
+  <Step title="Setup">
+    ```bash
+    # Initialize project
+    cd ~/projects/my-saas
+    squirrel init -n my-saas
+    ```
+  </Step>
+  
+  <Step title="Initial Audit">
+    ```bash
+    # Surface audit of production site
+    squirrel audit https://my-saas.com --format llm
+    ```
+    
+    Results:
+    - Score: 68/100 (Grade D)
+    - 43 errors, 89 warnings
+    - Categories: SEO issues, missing alt text, heading problems
+  </Step>
+  
+  <Step title="Plan Fixes">
+    Identify parallelizable work:
+    - 12 files missing alt text → 3 subagents
+    - 18 files with heading hierarchy issues → 3 subagents
+    - 7 files with short descriptions → 1 subagent
+    - Meta tag fixes → Main agent (shared components)
+  </Step>
+  
+  <Step title="Execute Fixes">
+    Spawn subagents in parallel for content fixes.
+    Main agent handles shared component updates.
+  </Step>
+  
+  <Step title="Re-Audit">
+    ```bash
+    squirrel audit https://my-saas.com --refresh --format llm
+    ```
+    
+    Results:
+    - Score: 87/100 (Grade B)
+    - 4 errors, 12 warnings
+  </Step>
+  
+  <Step title="Final Round">
+    Fix remaining issues.
+    
+    ```bash
+    squirrel audit https://my-saas.com --refresh --format llm
+    ```
+    
+    Results:
+    - Score: 96/100 (Grade A+)
+    - 0 errors, 2 warnings (require human judgment)
+  </Step>
+</Steps>
+
+## Completion Criteria
+
+A site audit is complete when:
+
+- ✅ All errors fixed
+- ✅ All warnings fixed or documented as requiring human review
+- ✅ Re-audit confirms improvements
+- ✅ Before/after comparison shown
+- ✅ Score above 95 with full coverage
+
+<Warning>
+  **Don't stop early.** Fix ALL issues, not just the obvious ones. Continue until score targets are met.
+</Warning>
+
+## Troubleshooting
+
+### Command Not Found
+
+**Problem**: `squirrel: command not found`
+
+**Solution**:
+```bash
+# 1. Install squirrel
+curl -fsSL https://squirrelscan.com/install | bash
+
+# 2. Add to PATH
+export PATH="$HOME/.local/bin:$PATH"
+
+# 3. Verify
+squirrel --version
+```
+
+### Permission Denied
+
+**Problem**: Permission error when running squirrel
+
+**Solution**:
+```bash
+chmod +x ~/.local/bin/squirrel
+```
+
+### Invalid URL
+
+**Problem**: Audit fails with URL error
+
+**Solution**: Include protocol in URL
+```bash
+# ✗ Wrong
+squirrel audit example.com
+
+# ✓ Correct
+squirrel audit https://example.com
+```
+
+### Slow Performance
+
+**Problem**: Audit takes too long
+
+**Solution**: Use quick coverage or reduce max pages
+```bash
+# Fast health check
+squirrel audit https://example.com --coverage quick --format llm
+
+# Or limit pages
+squirrel audit https://example.com --max-pages 50 --format llm
+```
+
+## Additional Resources
+
+<CardGroup cols={2}>
+  <Card title="squirrelscan Docs" icon="book" href="https://docs.squirrelscan.com">
+    Full documentation including rule references
+  </Card>
+  <Card title="Rule Reference" icon="list-check" href="https://docs.squirrelscan.com/rules">
+    Detailed explanations of all 230+ rules
+  </Card>
+  <Card title="CLI Help" icon="terminal" href="#">
+    Run `squirrel audit --help` for command reference
+  </Card>
+  <Card title="Website" icon="globe" href="https://squirrelscan.com">
+    squirrelscan homepage and updates
+  </Card>
+</CardGroup>
+
+### Rule Documentation
+
+Look up specific rules:
+
+```
+https://docs.squirrelscan.com/rules/{category}/{rule_id}
+```
+
+**Example**:
+```
+https://docs.squirrelscan.com/rules/links/external-links
+```
+
+## Related Commands
+
+### Report Commands
+
+```bash
+# List recent audits
+squirrel report --list
+
+# Generate report from audit ID
+squirrel report <audit-id> --format llm
+
+# Filter by severity
+squirrel report <audit-id> --severity error
+
+# Filter by categories
+squirrel report <audit-id> --category seo,performance
+```
+
+### Config Commands
+
+```bash
+# Show current config
+squirrel config show
+
+# Set config value
+squirrel config set project.name my-site
+
+# Show config file path
+squirrel config path
+
+# Validate config
+squirrel config validate
+```
+
+### Self-Management Commands
+
+```bash
+# Update squirrel
+squirrel self update
+
+# Health check
+squirrel self doctor
+
+# Version info
+squirrel self version
+
+# Shell completions
+squirrel self completion
+```
+
+## Best Practices
+
+1. **Always use LLM format** for agent workflows
+2. **Start with surface audits** before full scans
+3. **Re-audit after fixes** to verify improvements
+4. **Parallelize content fixes** using subagents
+5. **Don't stop early** - reach score targets
+6. **Audit frequently** to catch issues early
+7. **Test before deployment** by auditing staging/preview environments

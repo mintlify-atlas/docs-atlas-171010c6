@@ -1,0 +1,580 @@
+---
+title: "Accessibility Rules"
+description: "Reference guide for accessibility audit rules including WCAG compliance, ARIA landmarks, and inclusive design"
+---
+
+## Overview
+
+Accessibility rules ensure your website is usable by everyone, including people with disabilities. Accessible sites also perform better in search results and provide better user experiences overall.
+
+<Info>
+**Why accessibility matters**: 15% of the world's population has some form of disability. Making your site accessible expands your audience and is often legally required.
+</Info>
+
+## Image Alt Text
+
+### Rule: `a11y/image-alt`
+
+**What it checks:**
+- All images have `alt` attributes
+- Alt text is descriptive (not empty or generic)
+- Decorative images use empty alt (`alt=""`)
+- Complex images have detailed descriptions
+
+**Why it matters:**
+Screen readers rely on alt text to describe images to visually impaired users. Missing or poor alt text creates barriers.
+
+<Accordion title="Writing Good Alt Text">
+```html
+<!-- ❌ Bad: Missing alt -->
+<img src="product.jpg">
+
+<!-- ❌ Bad: Generic alt text -->
+<img src="product.jpg" alt="image">
+<img src="product.jpg" alt="photo">
+
+<!-- ❌ Bad: Redundant "image of" -->
+<img src="product.jpg" alt="Image of a laptop computer">
+
+<!-- ✅ Good: Descriptive alt text -->
+<img src="product.jpg" alt="MacBook Pro 16-inch with M3 chip, space gray">
+
+<!-- ✅ Good: Decorative image (empty alt) -->
+<img src="decorative-line.svg" alt="" aria-hidden="true">
+
+<!-- ✅ Good: Complex image with long description -->
+<img src="sales-chart.png" 
+     alt="Sales growth chart showing 45% increase in Q4 2025"
+     longdesc="#chart-description">
+<div id="chart-description">
+  <p>Detailed description: Monthly sales from January to December 2025...</p>
+</div>
+```
+
+**Alt text guidelines:**
+- Be specific and concise (typically 125 characters or less)
+- Describe the content and function, not just appearance
+- Don't say "image of" or "picture of" (screen readers announce it's an image)
+- For decorative images, use `alt=""` (empty, not missing)
+- For functional images (buttons, links), describe the action
+- For charts/graphs, summarize the key insight
+</Accordion>
+
+## ARIA Landmarks
+
+### Rule: `a11y/landmarks`
+
+**What it checks:**
+- Page has semantic HTML5 landmarks
+- Proper use of `<header>`, `<nav>`, `<main>`, `<aside>`, `<footer>`
+- ARIA roles used correctly
+- One `<main>` landmark per page
+
+**Why it matters:**
+Landmarks help screen reader users navigate and understand page structure quickly.
+
+<Accordion title="Fix Missing Landmarks">
+**Issue: No `<main>` landmark**
+
+```html
+<!-- ❌ Bad: No semantic landmarks -->
+<div id="header">...</div>
+<div id="content">
+  <div id="article">...</div>
+</div>
+<div id="footer">...</div>
+
+<!-- ✅ Good: Semantic HTML5 landmarks -->
+<header>
+  <nav aria-label="Main navigation">
+    <!-- Navigation menu -->
+  </nav>
+</header>
+
+<main>
+  <article>
+    <h1>Article Title</h1>
+    <!-- Article content -->
+  </article>
+  
+  <aside>
+    <!-- Related content, sidebar -->
+  </aside>
+</main>
+
+<footer>
+  <!-- Footer content -->
+</footer>
+```
+
+**ARIA landmark roles:**
+
+| HTML5 Element | ARIA Role | Purpose |
+|---------------|-----------|----------|
+| `<header>` | `banner` | Site header |
+| `<nav>` | `navigation` | Navigation menu |
+| `<main>` | `main` | Primary content |
+| `<aside>` | `complementary` | Related content |
+| `<footer>` | `contentinfo` | Site footer |
+| `<section>` | `region` | Thematic content |
+| `<article>` | `article` | Self-contained content |
+| `<form>` | `form` | Form |
+| `<search>` | `search` | Search widget |
+</Accordion>
+
+<Note>
+Use HTML5 semantic elements (`<main>`, `<nav>`, etc.) instead of ARIA roles when possible. HTML5 elements have better browser support.
+</Note>
+
+## Skip Links
+
+### Rule: `a11y/skip-link`
+
+**What it checks:**
+- "Skip to main content" link exists
+- Link is first focusable element
+- Link works correctly
+
+**Why it matters:**
+Keyboard users need to skip repetitive navigation and jump straight to main content.
+
+<Accordion title="Add Skip Link">
+```html
+<!-- ✅ Good: Skip link (first element in body) -->
+<body>
+  <a href="#main-content" class="skip-link">
+    Skip to main content
+  </a>
+  
+  <header>
+    <!-- Header content -->
+  </header>
+  
+  <main id="main-content" tabindex="-1">
+    <!-- Main content -->
+  </main>
+</body>
+```
+
+**CSS for skip link (visible on focus):**
+
+```css
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: #000;
+  color: #fff;
+  padding: 8px 16px;
+  text-decoration: none;
+  z-index: 100;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+```
+</Accordion>
+
+## Color Contrast
+
+### Rule: `a11y/color-contrast`
+
+**What it checks:**
+- Text meets WCAG AA contrast ratio (4.5:1 for normal text, 3:1 for large text)
+- Links are distinguishable from surrounding text
+- UI components have sufficient contrast
+
+**Why it matters:**
+Low contrast makes text hard to read for users with low vision or color blindness.
+
+<Accordion title="Fix Contrast Issues">
+**WCAG Contrast Requirements:**
+
+| Level | Normal Text | Large Text (18pt+) |
+|-------|-------------|--------------------|
+| AA | 4.5:1 | 3:1 |
+| AAA | 7:1 | 4.5:1 |
+
+```css
+/* ❌ Bad: Insufficient contrast (2.5:1) */
+.text {
+  color: #999; /* Light gray */
+  background: #fff; /* White */
+}
+
+/* ✅ Good: Sufficient contrast (7:1) */
+.text {
+  color: #555; /* Dark gray */
+  background: #fff; /* White */
+}
+
+/* ✅ Good: High contrast for links */
+a {
+  color: #0056b3; /* Dark blue (4.5:1 on white) */
+  text-decoration: underline; /* Don't rely on color alone */
+}
+
+a:hover {
+  color: #003d82; /* Even darker on hover */
+}
+```
+
+**Testing tools:**
+- [WebAIM Contrast Checker](https://webaim.org/resources/contrastchecker/)
+- Chrome DevTools (Inspect element → Color picker shows contrast ratio)
+- [Contrast Finder](https://app.contrast-finder.org/) (suggests fixes)
+</Accordion>
+
+## Keyboard Navigation
+
+### Rule: `a11y/keyboard`
+
+**What it checks:**
+- All interactive elements are keyboard accessible
+- Focus order is logical
+- Focus indicators are visible
+- No keyboard traps
+
+**Why it matters:**
+Many users navigate with keyboard only (not mouse). Inaccessible keyboard navigation excludes these users.
+
+<Accordion title="Ensure Keyboard Accessibility">
+**Keyboard navigation requirements:**
+
+```html
+<!-- ❌ Bad: Div button (not keyboard accessible) -->
+<div onclick="handleClick()">Click me</div>
+
+<!-- ✅ Good: Semantic button (keyboard accessible) -->
+<button onclick="handleClick()">Click me</button>
+
+<!-- ✅ Good: If you must use div, add role and tabindex -->
+<div role="button" tabindex="0" onclick="handleClick()" onkeypress="handleKeyPress(event)">
+  Click me
+</div>
+```
+
+**Focus styles (never remove!):**
+
+```css
+/* ❌ Bad: Removing focus outline */
+button:focus {
+  outline: none; /* Don't do this! */
+}
+
+/* ✅ Good: Custom focus style */
+button:focus {
+  outline: 2px solid #0056b3;
+  outline-offset: 2px;
+}
+
+/* ✅ Good: Focus-visible (only for keyboard) */
+button:focus-visible {
+  outline: 2px solid #0056b3;
+  outline-offset: 2px;
+}
+```
+
+**Logical tab order:**
+
+```html
+<!-- Tab order follows visual order -->
+<nav>
+  <a href="/" tabindex="1">Home</a> <!-- Don't manually set tabindex unless necessary -->
+  <a href="/about">About</a>
+  <a href="/contact">Contact</a>
+</nav>
+```
+
+<Warning>
+Avoid using `tabindex` values greater than 0. They create unpredictable tab orders. Use natural DOM order instead.
+</Warning>
+</Accordion>
+
+## Form Labels
+
+### Rule: `a11y/form-labels`
+
+**What it checks:**
+- All form inputs have associated labels
+- Labels are properly linked to inputs
+- Required fields are indicated
+- Error messages are accessible
+
+<Accordion title="Accessible Forms">
+```html
+<!-- ❌ Bad: No label -->
+<input type="text" placeholder="Enter your name">
+
+<!-- ❌ Bad: Label not associated -->
+<label>Name</label>
+<input type="text">
+
+<!-- ✅ Good: Explicit label association -->
+<label for="name">Name</label>
+<input type="text" id="name" name="name">
+
+<!-- ✅ Good: Implicit label association -->
+<label>
+  Name
+  <input type="text" name="name">
+</label>
+
+<!-- ✅ Good: Required field indication -->
+<label for="email">
+  Email <span aria-label="required">*</span>
+</label>
+<input type="email" id="email" name="email" required aria-required="true">
+
+<!-- ✅ Good: Error message -->
+<label for="username">Username</label>
+<input type="text" 
+       id="username" 
+       name="username" 
+       aria-invalid="true" 
+       aria-describedby="username-error">
+<span id="username-error" role="alert">
+  Username must be at least 6 characters
+</span>
+```
+
+**Form best practices:**
+- Always use `<label>` elements (not placeholders alone)
+- Use `aria-required="true"` on required fields
+- Use `aria-invalid="true"` for fields with errors
+- Link error messages with `aria-describedby`
+- Group related inputs with `<fieldset>` and `<legend>`
+</Accordion>
+
+## Heading Hierarchy
+
+### Rule: `a11y/heading-order`
+
+**What it checks:**
+- Headings follow logical order (H1 → H2 → H3)
+- No skipped heading levels (H1 → H3)
+- One H1 per page
+- Headings describe content accurately
+
+<Accordion title="Fix Heading Hierarchy">
+```html
+<!-- ❌ Bad: Skipped heading levels -->
+<h1>Page Title</h1>
+<h3>Subsection</h3> <!-- Skipped H2 -->
+<h5>Detail</h5> <!-- Skipped H3, H4 -->
+
+<!-- ✅ Good: Logical heading hierarchy -->
+<h1>Page Title</h1>
+<h2>Main Section</h2>
+<h3>Subsection</h3>
+<h4>Detail</h4>
+<h2>Another Main Section</h2>
+<h3>Subsection</h3>
+```
+
+**Heading outline example:**
+
+```html
+<main>
+  <h1>Market Research Toolkit</h1>
+  
+  <section>
+    <h2>Website Auditing</h2>
+    <p>...</p>
+    
+    <h3>230+ Audit Rules</h3>
+    <p>...</p>
+    
+    <h3>21 Categories</h3>
+    <p>...</p>
+  </section>
+  
+  <section>
+    <h2>Marketing Psychology</h2>
+    <p>...</p>
+    
+    <h3>70+ Mental Models</h3>
+    <p>...</p>
+  </section>
+</main>
+```
+
+**Visual vs. semantic heading levels:**
+
+If you need an H2 to look like an H4, use CSS (don't change the heading level):
+
+```html
+<h2 class="text-small">Small-looking H2</h2>
+```
+
+```css
+.text-small {
+  font-size: 1rem; /* Makes it look smaller */
+}
+```
+</Accordion>
+
+## ARIA Attributes
+
+### Common ARIA Attributes
+
+<Accordion title="aria-label">
+Provides accessible name when visible text isn't sufficient:
+
+```html
+<!-- ✅ Icon button with aria-label -->
+<button aria-label="Close dialog">
+  <svg>...</svg> <!-- Just an X icon -->
+</button>
+
+<!-- ✅ Search input with aria-label -->
+<input type="search" aria-label="Search products" placeholder="Search...">
+```
+</Accordion>
+
+<Accordion title="aria-labelledby & aria-describedby">
+References other elements for labels/descriptions:
+
+```html
+<!-- aria-labelledby: Points to label -->
+<h2 id="dialog-title">Confirm Delete</h2>
+<div role="dialog" aria-labelledby="dialog-title">
+  <p>Are you sure you want to delete this item?</p>
+</div>
+
+<!-- aria-describedby: Points to description -->
+<label for="password">Password</label>
+<input type="password" 
+       id="password" 
+       aria-describedby="password-requirements">
+<div id="password-requirements">
+  Must be at least 8 characters with 1 number
+</div>
+```
+</Accordion>
+
+<Accordion title="aria-hidden">
+Hides decorative content from screen readers:
+
+```html
+<!-- ✅ Hide decorative icon -->
+<button>
+  <svg aria-hidden="true">...</svg>
+  Save Document
+</button>
+
+<!-- ❌ Don't hide meaningful content -->
+<img src="product.jpg" alt="MacBook Pro" aria-hidden="true"> <!-- Bad! -->
+```
+</Accordion>
+
+<Accordion title="aria-live">
+Announces dynamic content changes:
+
+```html
+<!-- ✅ Announce status updates -->
+<div aria-live="polite" aria-atomic="true">
+  Item added to cart
+</div>
+
+<!-- ✅ Announce errors immediately -->
+<div role="alert" aria-live="assertive">
+  Error: Payment failed
+</div>
+```
+
+**aria-live values:**
+- `off`: Don't announce (default)
+- `polite`: Announce when user is idle
+- `assertive`: Announce immediately (use sparingly)
+</Accordion>
+
+## Testing Accessibility
+
+<CardGroup cols={2}>
+  <Card title="WAVE" icon="wave-pulse" href="https://wave.webaim.org/">
+    Browser extension for visual accessibility evaluation
+  </Card>
+  <Card title="axe DevTools" icon="axe" href="https://www.deque.com/axe/devtools/">
+    Automated accessibility testing in browser DevTools
+  </Card>
+  <Card title="Lighthouse" icon="lighthouse" href="https://developers.google.com/web/tools/lighthouse">
+    Accessibility audit built into Chrome DevTools
+  </Card>
+  <Card title="NVDA Screen Reader" icon="headphones" href="https://www.nvaccess.org/">
+    Free screen reader for Windows (test with real tools)
+  </Card>
+</CardGroup>
+
+## WCAG Compliance Levels
+
+| Level | Requirements | Use Case |
+|-------|--------------|----------|
+| A | Minimum | Bare minimum (not recommended as target) |
+| AA | Standard | **Target for most sites** (legally required in many jurisdictions) |
+| AAA | Enhanced | Maximum accessibility (difficult to achieve for all content) |
+
+<Note>
+WCAG 2.1 Level AA is the standard target and is legally required in many countries (EU, US Section 508, ADA).
+</Note>
+
+## Accessibility Checklist
+
+<Steps>
+  <Step title="Images & Media">
+    - All images have descriptive alt text
+    - Decorative images use `alt=""`
+    - Videos have captions and transcripts
+  </Step>
+  
+  <Step title="Semantic HTML">
+    - Use `<header>`, `<nav>`, `<main>`, `<footer>` landmarks
+    - Add skip link to main content
+    - Proper heading hierarchy (H1 → H2 → H3)
+  </Step>
+  
+  <Step title="Keyboard Navigation">
+    - All interactive elements keyboard accessible
+    - Visible focus indicators
+    - Logical tab order
+    - No keyboard traps
+  </Step>
+  
+  <Step title="Color & Contrast">
+    - Text meets 4.5:1 contrast ratio (WCAG AA)
+    - Don't rely on color alone to convey information
+    - Links distinguishable from text
+  </Step>
+  
+  <Step title="Forms">
+    - All inputs have labels
+    - Required fields marked
+    - Error messages accessible
+    - Use ARIA attributes appropriately
+  </Step>
+  
+  <Step title="Test & Validate">
+    - Run automated tests (axe, Lighthouse, WAVE)
+    - Test with keyboard only
+    - Test with screen reader
+    - Get feedback from users with disabilities
+  </Step>
+</Steps>
+
+## Related Pages
+
+<CardGroup cols={2}>
+  <Card title="Content Rules" icon="file-lines" href="/reference/rules/content">
+    Content quality, heading structure, and readability
+  </Card>
+  <Card title="Core SEO Rules" icon="magnifying-glass" href="/reference/rules/core-seo">
+    Title tags, meta descriptions, and semantic HTML
+  </Card>
+  <Card title="Running Audits" icon="play" href="/auditing/running-audits">
+    Learn how to run accessibility audits
+  </Card>
+  <Card title="Audit Categories" icon="folder-tree" href="/auditing/audit-categories">
+    Explore all 21 audit categories
+  </Card>
+</CardGroup>

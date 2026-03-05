@@ -1,0 +1,694 @@
+---
+title: 'Running audits'
+description: 'Complete guide to running website audits with coverage modes, format options, and advanced features.'
+keywords: ['run audit', 'squirrel audit', 'coverage modes', 'audit commands', 'website scanning']
+icon: 'play'
+---
+
+# Running audits
+
+Learn how to run comprehensive website audits with squirrel, from quick health checks to deep analysis.
+
+<Info>
+  All audit results are stored in a local database at `~/.squirrel/projects/<project-name>`, allowing you to generate multiple report formats from a single crawl.
+</Info>
+
+## Basic audit command
+
+The simplest way to audit a website:
+
+```bash
+squirrel audit https://example.com
+```
+
+This command:
+- Crawls up to 100 pages (default surface mode)
+- Analyzes against 230+ rules
+- Displays console output with colored formatting
+- Saves results to the local database
+
+<Tip>
+  Always include the protocol (`https://` or `http://`) in the URL.
+</Tip>
+
+### Quick start examples
+
+<CodeGroup>
+```bash Default audit
+squirrel audit https://example.com
+```
+
+```bash With LLM output
+squirrel audit https://example.com --format llm
+```
+
+```bash Save to file
+squirrel audit https://example.com --format json -o report.json
+```
+
+```bash Full coverage
+squirrel audit https://example.com --coverage full --format llm
+```
+</CodeGroup>
+
+## Coverage modes explained
+
+Choose the scan depth that matches your needs:
+
+<Tabs>
+  <Tab title="Quick" icon="bolt">
+    ### Quick mode
+    
+    **25 pages** - Fastest scan for rapid health checks
+    
+    ```bash
+    squirrel audit https://example.com --coverage quick
+    # or use the alias
+    squirrel audit https://example.com -C quick
+    ```
+    
+    #### How it works
+    
+    - Crawls seed URLs only (homepage, sitemap entries)
+    - **No link discovery** - doesn't follow internal links
+    - Focuses on primary pages and templates
+    
+    #### Best for
+    
+    <CardGroup cols={3}>
+      <Card icon="infinity" title="CI/CD pipelines">
+        Fast checks on every deployment
+      </Card>
+      <Card icon="heart-pulse" title="Health monitoring">
+        Daily status checks
+      </Card>
+      <Card icon="clock" title="Rapid feedback">
+        Quick validation during development
+      </Card>
+    </CardGroup>
+    
+    <Warning>
+      Quick mode may miss issues on pages not in sitemaps or seed URLs.
+    </Warning>
+  </Tab>
+  
+  <Tab title="Surface" icon="chart-simple">
+    ### Surface mode (Default)
+    
+    **100 pages** - Smart sampling of unique templates
+    
+    ```bash
+    squirrel audit https://example.com --coverage surface
+    # or simply
+    squirrel audit https://example.com
+    ```
+    
+    #### How it works
+    
+    - Detects URL patterns like `/blog/{slug}` or `/products/{id}`
+    - Crawls **one sample per pattern**
+    - Discovers links and explores site structure
+    - Balances coverage with speed
+    
+    #### Pattern detection example
+    
+    For a blog with 500 posts at `/blog/{slug}`:
+    - **Surface mode**: Crawls 1 sample post
+    - **Full mode**: Would crawl all 500 posts
+    
+    This makes surface mode ideal for sites with many similar pages.
+    
+    #### Best for
+    
+    <CardGroup cols={3}>
+      <Card icon="file-lines" title="General audits">
+        Most common use case
+      </Card>
+      <Card icon="layer-group" title="Template coverage">
+        Validates all page types
+      </Card>
+      <Card icon="calendar" title="Regular monitoring">
+        Weekly or monthly checks
+      </Card>
+    </CardGroup>
+  </Tab>
+  
+  <Tab title="Full" icon="list">
+    ### Full mode
+    
+    **500 pages** (default) - Comprehensive deep dive
+    
+    ```bash
+    squirrel audit https://example.com --coverage full
+    # or use the alias
+    squirrel audit https://example.com -C full
+    ```
+    
+    #### How it works
+    
+    - Crawls **everything** up to the page limit
+    - Follows all internal links
+    - Discovers deep pages and edge cases
+    - Most thorough analysis
+    
+    #### Override page limit
+    
+    ```bash
+    # Increase to 1000 pages
+    squirrel audit https://example.com -C full --max-pages 1000
+    
+    # Maximum allowed is 5000
+    squirrel audit https://example.com -C full -m 5000
+    ```
+    
+    #### Best for
+    
+    <CardGroup cols={3}>
+      <Card icon="rocket" title="Pre-launch audits">
+        Complete validation before going live
+      </Card>
+      <Card icon="microscope" title="Deep analysis">
+        Thorough investigation of issues
+      </Card>
+      <Card icon="check-double" title="Certification">
+        Meeting strict quality standards
+      </Card>
+    </CardGroup>
+    
+    <Note>
+      Full audits take longer (several minutes for large sites) but provide the most comprehensive results.
+    </Note>
+  </Tab>
+</Tabs>
+
+### Coverage mode comparison
+
+| Mode | Pages | Link Discovery | Use Case | Speed |
+|------|-------|----------------|----------|-------|
+| `quick` | 25 | No | CI checks, monitoring | ⚡⚡⚡ Fastest |
+| `surface` | 100 | Yes (sampled) | General audits | ⚡⚡ Fast |
+| `full` | 500 | Yes (complete) | Deep analysis | ⚡ Thorough |
+
+## Format options
+
+Choose the output format that fits your workflow:
+
+<Tabs>
+  <Tab title="LLM" icon="robot">
+    ### LLM format (Recommended for AI)
+    
+    Compact XML/text hybrid optimized for AI agents:
+    
+    ```bash
+    squirrel audit https://example.com --format llm
+    ```
+    
+    #### Features
+    
+    - **40% more compact** than verbose XML
+    - Token-efficient structure
+    - Includes summary, issues, broken links, and recommendations
+    - Organized by category for easy parsing
+    
+    #### Output structure
+    
+    ```xml
+    <audit>
+      <summary>
+        <score>78</score>
+        <grade>C</grade>
+        ...
+      </summary>
+      <issues>
+        <category name="Core SEO">
+          <issue rule="missing-meta-description" severity="warning" ...>
+        </category>
+      </issues>
+      <broken-links>...</broken-links>
+      <recommendations>...</recommendations>
+    </audit>
+    ```
+  </Tab>
+  
+  <Tab title="Console" icon="terminal">
+    ### Console format (Default)
+    
+    Human-readable terminal output:
+    
+    ```bash
+    squirrel audit https://example.com
+    # equivalent to
+    squirrel audit https://example.com --format console
+    ```
+    
+    #### Features
+    
+    - Colored output for readability
+    - Progress indicators during crawl
+    - Summary statistics
+    - Top issues highlighted
+    
+    <Check>
+      This is the default format when no `--format` is specified.
+    </Check>
+  </Tab>
+  
+  <Tab title="JSON" icon="brackets-curly">
+    ### JSON format
+    
+    Structured data for programmatic access:
+    
+    ```bash
+    squirrel audit https://example.com --format json -o report.json
+    ```
+    
+    #### Features
+    
+    - Complete audit data
+    - Easy to parse and integrate
+    - Supports filtering and querying
+    
+    #### Example output
+    
+    ```json
+    {
+      "audit_id": "a1b2c3d4",
+      "timestamp": "2024-10-11T10:30:00Z",
+      "url": "https://example.com",
+      "score": 78,
+      "grade": "C",
+      "issues": [...],
+      "categories": {...}
+    }
+    ```
+  </Tab>
+  
+  <Tab title="HTML" icon="file-code">
+    ### HTML format
+    
+    Interactive web report:
+    
+    ```bash
+    squirrel audit https://example.com --format html -o report.html
+    ```
+    
+    #### Features
+    
+    - Sortable tables
+    - Filtering by category or severity
+    - Visual charts and graphs
+    - Share with stakeholders
+    
+    Open the generated file in a browser to view the interactive report.
+  </Tab>
+  
+  <Tab title="Markdown" icon="markdown">
+    ### Markdown format
+    
+    Documentation-friendly output:
+    
+    ```bash
+    squirrel audit https://example.com --format markdown -o report.md
+    ```
+    
+    #### Features
+    
+    - Include in wikis or documentation
+    - Version control friendly
+    - Easy to read and edit
+    - Supports tables and lists
+  </Tab>
+</Tabs>
+
+### Format comparison
+
+| Format | Best For | Interactive | File Size |
+|--------|----------|-------------|------------|
+| `llm` | AI agents, automation | No | Small |
+| `console` | Terminal viewing | No | N/A |
+| `json` | Integration, APIs | No | Medium |
+| `html` | Stakeholders, sharing | Yes | Large |
+| `markdown` | Documentation | No | Small |
+
+## Advanced options
+
+<AccordionGroup>
+  <Accordion title="Refresh: Force fresh crawl" icon="arrows-rotate" defaultOpen>
+    Ignore cached results and fetch all pages fresh:
+    
+    ```bash
+    squirrel audit https://example.com --refresh
+    # or use the alias
+    squirrel audit https://example.com -r
+    ```
+    
+    ### When to use
+    
+    - After making significant changes to the site
+    - When you suspect cached data is stale
+    - For comparing before/after deployment
+    
+    <Warning>
+      Fresh crawls take longer and may impact the target website's server load.
+    </Warning>
+  </Accordion>
+  
+  <Accordion title="Resume: Continue interrupted crawl" icon="play-pause">
+    Resume a crawl that was stopped or interrupted:
+    
+    ```bash
+    squirrel audit https://example.com --resume
+    ```
+    
+    ### When to use
+    
+    - Network interruption during crawl
+    - Timeout on large sites
+    - Manually stopped audit
+    
+    <Info>
+      The crawler tracks progress in the database, allowing it to pick up where it left off.
+    </Info>
+  </Accordion>
+  
+  <Accordion title="Max pages: Override page limit" icon="list-ol">
+    Crawl more or fewer pages than the default:
+    
+    ```bash
+    # Audit up to 200 pages
+    squirrel audit https://example.com --max-pages 200
+    
+    # Using alias
+    squirrel audit https://example.com -m 200
+    
+    # Maximum is 5000
+    squirrel audit https://example.com -m 5000
+    ```
+    
+    ### Page limit by coverage
+    
+    Default limits can be overridden:
+    
+    - Quick: 25 pages (can increase to 100)
+    - Surface: 100 pages (can increase to 500)
+    - Full: 500 pages (can increase to 5000)
+  </Accordion>
+  
+  <Accordion title="Verbose: Detailed logging" icon="message-lines">
+    Display detailed progress and debugging information:
+    
+    ```bash
+    squirrel audit https://example.com --verbose
+    # or use the alias
+    squirrel audit https://example.com -v
+    ```
+    
+    ### Output includes
+    
+    - URLs being crawled
+    - Rule execution details
+    - Timing information
+    - Cache hit/miss status
+    
+    <Tip>
+      Use verbose mode when diagnosing issues or monitoring large crawls.
+    </Tip>
+  </Accordion>
+  
+  <Accordion title="Debug: Maximum logging" icon="bug">
+    Enable debug-level logging for troubleshooting:
+    
+    ```bash
+    squirrel audit https://example.com --debug
+    ```
+    
+    Outputs extensive internal information including HTTP requests, rule evaluations, and database operations.
+  </Accordion>
+  
+  <Accordion title="Trace: Performance profiling" icon="gauge">
+    Enable performance tracing:
+    
+    ```bash
+    squirrel audit https://example.com --trace
+    ```
+    
+    Tracks timing and resource usage for performance optimization.
+  </Accordion>
+  
+  <Accordion title="Project name: Override config" icon="folder">
+    Use a different project name for this audit:
+    
+    ```bash
+    squirrel audit https://example.com --project-name temp-audit
+    # or use alias
+    squirrel audit https://example.com -n temp-audit
+    ```
+    
+    This stores the audit in `~/.squirrel/projects/temp-audit/` instead of the configured project.
+  </Accordion>
+</AccordionGroup>
+
+### Combining options
+
+Advanced options can be combined:
+
+```bash
+# Full fresh audit with verbose output
+squirrel audit https://example.com \
+  --coverage full \
+  --max-pages 1000 \
+  --refresh \
+  --format llm \
+  --verbose
+```
+
+## Two-step workflow
+
+For maximum efficiency, separate crawling from report generation:
+
+<Steps>
+  <Step title="Run the audit">
+    Execute the audit once and save to database:
+    
+    ```bash
+    squirrel audit https://example.com --coverage full
+    ```
+    
+    The output will include an **audit ID** (e.g., `a1b2c3d4`).
+  </Step>
+  
+  <Step title="Generate multiple reports">
+    Export the same audit in different formats without re-crawling:
+    
+    ```bash
+    # LLM format for AI analysis
+    squirrel report a1b2c3d4 --format llm
+    
+    # JSON for integration
+    squirrel report a1b2c3d4 --format json -o report.json
+    
+    # HTML for stakeholders
+    squirrel report a1b2c3d4 --format html -o report.html
+    
+    # Markdown for documentation
+    squirrel report a1b2c3d4 --format markdown -o report.md
+    ```
+  </Step>
+</Steps>
+
+<Tip>
+  This approach saves time and bandwidth - crawl once, export many times.
+</Tip>
+
+### Finding audit IDs
+
+List recent audits to find IDs:
+
+```bash
+squirrel report --list
+# or use alias
+squirrel report -l
+```
+
+Output:
+```
+Recent audits:
+  a1b2c3d4 - example.com - 2024-10-11 10:30:00 - Score: 78
+  e5f6g7h8 - example.com - 2024-10-10 15:45:00 - Score: 72
+```
+
+## Filtering reports
+
+Generate focused reports by filtering results:
+
+<Tabs>
+  <Tab title="By severity">
+    Show only errors or warnings:
+    
+    ```bash
+    # Only errors
+    squirrel report a1b2c3d4 --severity error --format llm
+    
+    # Errors and warnings
+    squirrel report a1b2c3d4 --severity warning --format llm
+    
+    # Everything (default)
+    squirrel report a1b2c3d4 --severity all --format llm
+    ```
+  </Tab>
+  
+  <Tab title="By category">
+    Focus on specific audit categories:
+    
+    ```bash
+    # Only Core SEO issues
+    squirrel report a1b2c3d4 --category "Core SEO" --format llm
+    
+    # Multiple categories (comma-separated)
+    squirrel report a1b2c3d4 \
+      --category "Core SEO,Technical SEO,Performance" \
+      --format llm
+    ```
+  </Tab>
+  
+  <Tab title="Combine filters">
+    Use multiple filters together:
+    
+    ```bash
+    # SEO errors only
+    squirrel report a1b2c3d4 \
+      --category "Core SEO,Technical SEO" \
+      --severity error \
+      --format llm
+    ```
+  </Tab>
+</Tabs>
+
+## Regression detection
+
+Compare audits to detect regressions:
+
+<Tabs>
+  <Tab title="Compare by ID">
+    Compare current state against a baseline audit:
+    
+    ```bash
+    squirrel report --diff a1b2c3d4 --format llm
+    ```
+    
+    Where `a1b2c3d4` is the baseline audit ID.
+  </Tab>
+  
+  <Tab title="Compare by domain">
+    Compare latest audit against the last audit of a domain:
+    
+    ```bash
+    squirrel report --regression-since example.com --format llm
+    ```
+  </Tab>
+</Tabs>
+
+<Info>
+  Diff mode supports `console`, `text`, `json`, `llm`, and `markdown` formats. HTML and XML are not supported for diffs.
+</Info>
+
+### Diff output
+
+The diff report highlights:
+
+- **New issues** that weren't present in the baseline
+- **Fixed issues** that were resolved
+- **Score changes** (improved or degraded)
+- **Category changes**
+
+## Common workflows
+
+<AccordionGroup>
+  <Accordion title="Quick health check" icon="heart-pulse">
+    Fast validation during development:
+    
+    ```bash
+    squirrel audit https://localhost:3000 \
+      --coverage quick \
+      --format console
+    ```
+  </Accordion>
+  
+  <Accordion title="CI/CD integration" icon="infinity">
+    Automated checks on deployment:
+    
+    ```bash
+    # Run audit
+    squirrel audit https://staging.example.com \
+      --coverage quick \
+      --format json \
+      -o audit-results.json
+    
+    # Parse results in CI script
+    SCORE=$(jq '.score' audit-results.json)
+    if [ $SCORE -lt 85 ]; then
+      echo "Audit failed: score below threshold"
+      exit 1
+    fi
+    ```
+  </Accordion>
+  
+  <Accordion title="Pre-launch audit" icon="rocket">
+    Comprehensive validation before going live:
+    
+    ```bash
+    # Full audit with all details
+    squirrel audit https://staging.example.com \
+      --coverage full \
+      --max-pages 1000 \
+      --refresh \
+      --format llm
+    
+    # Generate stakeholder report
+    squirrel report <audit-id> --format html -o launch-audit.html
+    ```
+  </Accordion>
+  
+  <Accordion title="Monitoring changes" icon="chart-line">
+    Track site health over time:
+    
+    ```bash
+    # Weekly audit
+    squirrel audit https://example.com \
+      --coverage surface \
+      --format llm \
+      -o "audit-$(date +%Y-%m-%d).txt"
+    
+    # Compare with last week
+    squirrel report --diff <last-week-audit-id> --format markdown
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Best practices
+
+<CardGroup cols={2}>
+  <Card title="Start with surface" icon="chart-simple">
+    Begin with surface mode to get fast feedback on site structure and templates
+  </Card>
+  <Card title="Use LLM format for automation" icon="robot">
+    The LLM format is optimized for AI agents and automated workflows
+  </Card>
+  <Card title="Save audit IDs" icon="bookmark">
+    Keep track of audit IDs for historical comparisons and regression detection
+  </Card>
+  <Card title="Refresh before comparisons" icon="arrows-rotate">
+    Use `--refresh` when comparing before/after changes to ensure fresh data
+  </Card>
+</CardGroup>
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Audit categories" icon="grid" href="/auditing/audit-categories">
+    Learn about all 21 audit categories and their rules
+  </Card>
+  <Card title="Interpret results" icon="chart-line" href="/auditing/interpreting-results">
+    Understand health scores, severity levels, and prioritization
+  </Card>
+</CardGroup>

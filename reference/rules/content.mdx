@@ -1,0 +1,488 @@
+---
+title: "Content Rules"
+description: "Reference guide for content audit rules including heading hierarchy, content quality, and keyword optimization"
+---
+
+## Overview
+
+Content rules ensure your pages have high-quality, well-structured content that's valuable to users and search engines. Good content drives rankings, engagement, and conversions.
+
+## Content Length
+
+### Rule: `content/length`
+
+**What it checks:**
+- Minimum word count (typically 300+ words)
+- Content depth and substance
+- Not thin or duplicate content
+
+**Why it matters:**
+Thin content (low word count, little value) ranks poorly and provides bad user experience. Search engines favor comprehensive, in-depth content.
+
+<Accordion title="Common Issues">
+**Issue: Thin content (0 words detected)**
+
+This is often a **Single Page Application (SPA) rendering issue**—crawlers see empty content because JavaScript hasn't executed.
+
+**Causes:**
+- Client-side rendering (React, Vue, Angular) without SSR
+- Content loaded via AJAX after page load
+- JavaScript errors preventing content render
+
+**Solutions:**
+
+<CodeGroup>
+```javascript Next.js SSR
+// Server-Side Rendering
+export async function getServerSideProps() {
+  const content = await fetchContent();
+  return { props: { content } };
+}
+
+export default function Page({ content }) {
+  return <div>{content}</div>;
+}
+```
+
+```javascript Next.js SSG
+// Static Site Generation
+export async function getStaticProps() {
+  const content = await fetchContent();
+  return { 
+    props: { content },
+    revalidate: 3600 // Revalidate every hour
+  };
+}
+```
+
+```javascript Nuxt SSR
+// Nuxt.js Server-Side Rendering
+export default {
+  async asyncData({ $axios }) {
+    const content = await $axios.$get('/api/content');
+    return { content };
+  }
+}
+```
+</CodeGroup>
+
+**Alternative: Dynamic Rendering**
+
+Serve pre-rendered HTML to bots, JavaScript to users:
+
+```javascript
+// Express middleware
+const prerender = require('prerender-node');
+app.use(prerender.set('prerenderToken', 'YOUR_TOKEN'));
+```
+</Accordion>
+
+<Info>
+**Recommended word counts by page type:**
+- Homepage: 300-500 words
+- Product/service pages: 500-1000 words
+- Blog posts: 1000-2000+ words
+- Landing pages: 500-800 words
+</Info>
+
+## Heading Hierarchy
+
+### Rule: `content/headings`
+
+**What it checks:**
+- Logical heading structure (H1 → H2 → H3)
+- No skipped levels (H1 → H3)
+- One H1 per page
+- Headings contain keywords
+
+**Why it matters:**
+Proper heading hierarchy helps both users and search engines understand content structure. It's critical for SEO and accessibility.
+
+<Accordion title="Fix Heading Issues">
+```html
+<!-- ❌ Bad: Skipped heading levels -->
+<h1>Ultimate Guide to SEO</h1>
+<h3>On-Page SEO</h3> <!-- Skipped H2 -->
+<h5>Title Tags</h5> <!-- Skipped H3, H4 -->
+
+<!-- ❌ Bad: Multiple H1s -->
+<h1>Main Title</h1>
+<h1>Another Main Title</h1> <!-- Don't do this -->
+
+<!-- ✅ Good: Logical hierarchy -->
+<h1>Ultimate Guide to SEO</h1>
+<h2>On-Page SEO</h2>
+<h3>Title Tags</h3>
+<h4>Length Best Practices</h4>
+<h3>Meta Descriptions</h3>
+<h2>Technical SEO</h2>
+<h3>Site Speed</h3>
+```
+
+**Heading outline structure:**
+
+```
+H1: Ultimate Guide to SEO
+  H2: On-Page SEO
+    H3: Title Tags
+      H4: Length Best Practices
+      H4: Keyword Placement
+    H3: Meta Descriptions
+    H3: Header Tags
+  H2: Technical SEO
+    H3: Site Speed
+    H3: Mobile-Friendliness
+  H2: Off-Page SEO
+    H3: Link Building
+    H3: Social Signals
+```
+</Accordion>
+
+<Note>
+Headings should describe content (not just be styled text). Use CSS to change visual appearance, not heading levels.
+</Note>
+
+## Keyword Usage
+
+### Rule: `content/keywords`
+
+**What it checks:**
+- Keywords used naturally in content
+- Target keyword in H1, first paragraph
+- Keyword variations (LSI keywords)
+- Keyword density (2-3% max)
+
+**Why it matters:**
+Proper keyword usage helps search engines understand what your page is about. Over-optimization (keyword stuffing) hurts rankings.
+
+<Accordion title="Keyword Best Practices">
+**Where to use keywords:**
+
+1. **H1 heading**: Include primary keyword
+2. **First paragraph**: Use primary keyword in first 100 words
+3. **Subheadings (H2, H3)**: Use keyword variations
+4. **Throughout content**: Use naturally, aim for 2-3% density
+5. **Image alt text**: When relevant
+6. **URL**: Include primary keyword
+7. **Meta description**: Include primary keyword
+
+```markdown
+# ✅ Good: Natural keyword usage
+
+# AI Automation Platform for Sales Teams
+
+Our AI automation platform helps sales teams save 15+ hours weekly by automating 
+repetitive tasks like lead discovery, outreach, and CRM updates. With intelligent 
+automation, your team can focus on closing deals instead of manual data entry.
+
+## How AI Automation Improves Sales Productivity
+
+Automating your sales workflow with AI-powered tools reduces manual work and 
+increases team efficiency...
+```
+
+```markdown
+# ❌ Bad: Keyword stuffing
+
+# AI Automation Platform AI Automation Sales AI Automation
+
+AI automation AI automation AI automation for sales teams. Use our AI automation 
+platform for AI automation of sales AI automation processes. AI automation saves 
+time with AI automation features...
+```
+
+**LSI (Latent Semantic Indexing) keywords:**
+
+Use related terms and synonyms:
+
+- Primary: "AI automation platform"
+- LSI: "intelligent automation", "workflow automation", "sales automation software", "AI-powered tools", "automated workflows"
+</Accordion>
+
+## Keyword Stuffing
+
+### Rule: `content/keyword-stuffing`
+
+**What it checks:**
+- Keyword density not excessive (>5%)
+- No unnatural repetition
+- Content reads naturally
+
+<Accordion title="Avoid Keyword Stuffing">
+**Signs of keyword stuffing:**
+- Same phrase repeated unnaturally many times
+- Lists of keywords without context
+- Hidden keywords (white text on white background)
+- Keyword density above 5%
+
+**Penalties:**
+- Google Penguin algorithm penalizes keyword stuffing
+- Manual actions from Google Search Console
+- Rankings drop significantly
+
+**How to fix:**
+1. Rewrite content naturally
+2. Use synonyms and variations
+3. Focus on user value, not keyword count
+4. Aim for 2-3% keyword density max
+</Accordion>
+
+## Duplicate Content
+
+### Rule: `content/duplicate`
+
+**What it checks:**
+- Content is unique (not copied from other sites)
+- No internal duplicate content
+- Proper use of canonical tags
+
+**Why it matters:**
+Duplicate content confuses search engines and dilutes ranking power. Original content ranks better.
+
+<Accordion title="Fix Duplicate Content">
+**Types of duplicate content:**
+
+1. **External duplicate**: Copied from other websites
+   - **Fix**: Write original content or properly cite sources
+
+2. **Internal duplicate**: Same content on multiple pages of your site
+   - **Fix**: Use canonical tags or 301 redirects
+
+```html
+<!-- Page A (duplicate): -->
+<link rel="canonical" href="https://example.com/original-page">
+
+<!-- Page B (original): -->
+<link rel="canonical" href="https://example.com/original-page">
+```
+
+3. **Print/mobile versions**: Separate URLs for same content
+   - **Fix**: Use responsive design instead, or use canonical tags
+
+4. **URL parameters**: Different URLs, same content
+   - **Fix**: Use canonical tags or configure Google Search Console URL Parameters tool
+
+```html
+<!-- On: /products?sort=price&filter=new -->
+<link rel="canonical" href="https://example.com/products">
+```
+
+5. **HTTP/HTTPS and www/non-www**: Multiple versions of same page
+   - **Fix**: Choose one version and redirect others
+
+```nginx
+# Redirect HTTP to HTTPS and www to non-www
+server {
+  listen 80;
+  server_name example.com www.example.com;
+  return 301 https://example.com$request_uri;
+}
+
+server {
+  listen 443 ssl;
+  server_name www.example.com;
+  return 301 https://example.com$request_uri;
+}
+```
+</Accordion>
+
+## Readability
+
+### Rule: `content/readability`
+
+**What it checks:**
+- Appropriate reading level (8th-10th grade)
+- Short paragraphs (3-4 sentences)
+- Use of bullets and lists
+- Active voice
+
+**Why it matters:**
+Readable content keeps users engaged longer, reducing bounce rates and improving rankings.
+
+<Accordion title="Improve Readability">
+**Readability best practices:**
+
+1. **Use short paragraphs**: 3-4 sentences max
+2. **Use subheadings**: Break content into scannable sections
+3. **Use bullet points**: List items, features, benefits
+4. **Use short sentences**: Aim for 15-20 words
+5. **Use active voice**: "We automate tasks" not "Tasks are automated"
+6. **Use simple words**: "Use" not "utilize", "help" not "facilitate"
+7. **Use transitions**: "However", "Therefore", "For example"
+
+```markdown
+# ❌ Bad: Long, dense paragraph
+
+Our artificial intelligence-powered automation platform facilitates the optimization 
+of repetitive manual processes through the utilization of intelligent robotic process 
+automation combined with agentic workflows that leverage machine learning algorithms 
+to enable sales and recruiting teams to achieve productivity enhancements by eliminating 
+time-consuming data entry tasks and streamlining lead discovery, outreach sequencing, 
+and customer relationship management system updates.
+
+# ✅ Good: Short, scannable paragraphs
+
+## Save 15+ Hours Weekly with AI Automation
+
+Our AI platform automates repetitive tasks so your sales team can focus on closing deals.
+
+**What it automates:**
+- Lead discovery and research
+- Outreach sequences and follow-ups
+- CRM data entry and updates
+
+No more manual work. Just results.
+```
+
+**Reading level tools:**
+- [Hemingway Editor](https://hemingwayapp.com/) (highlights complex sentences)
+- [Readable](https://readable.com/) (calculates readability scores)
+- Yoast SEO (WordPress plugin with readability analysis)
+</Accordion>
+
+## Internal Linking
+
+### Rule: `links/internal`
+
+**What it checks:**
+- Pages have internal links (not orphaned)
+- Descriptive anchor text
+- Logical link structure
+- No dead-end pages
+
+**Why it matters:**
+Internal links help search engines discover and understand page relationships. They distribute PageRank and guide users.
+
+<Accordion title="Internal Linking Best Practices">
+**Issue: Zero internal links on homepage (dead-end page)**
+
+**Solutions:**
+
+1. **Add navigation menu:**
+```html
+<nav>
+  <a href="/">Home</a>
+  <a href="/products">Products</a>
+  <a href="/pricing">Pricing</a>
+  <a href="/about">About</a>
+  <a href="/contact">Contact</a>
+</nav>
+```
+
+2. **Add footer links:**
+```html
+<footer>
+  <div>
+    <h3>Product</h3>
+    <a href="/features">Features</a>
+    <a href="/pricing">Pricing</a>
+    <a href="/integrations">Integrations</a>
+  </div>
+  <div>
+    <h3>Resources</h3>
+    <a href="/blog">Blog</a>
+    <a href="/docs">Documentation</a>
+    <a href="/support">Support</a>
+  </div>
+</footer>
+```
+
+3. **Add contextual links in content:**
+```markdown
+Learn more about [website auditing](/auditing/overview) and 
+[marketing psychology](/psychology/overview) to improve your conversion rates.
+```
+
+**Anchor text best practices:**
+- Use descriptive text (not "click here")
+- Include keywords naturally
+- Vary anchor text (don't use same text for every link)
+- Make it clear where the link goes
+
+```html
+<!-- ❌ Bad anchor text -->
+<a href="/guide">Click here</a> to learn more.
+
+<!-- ✅ Good anchor text -->
+Read our <a href="/guide">comprehensive SEO guide</a> to improve rankings.
+```
+</Accordion>
+
+## Content Freshness
+
+### Rule: `content/freshness`
+
+**What it checks:**
+- Last modified date
+- Regular content updates
+- Outdated information flagged
+
+**Why it matters:**
+Fresh, updated content ranks better. Google favors recently updated pages for time-sensitive queries.
+
+<Accordion title="Keep Content Fresh">
+**Strategies:**
+
+1. **Add publish/update dates:**
+```html
+<article>
+  <h1>Ultimate SEO Guide</h1>
+  <time datetime="2026-02-09">Published: February 9, 2026</time>
+  <time datetime="2026-03-01">Updated: March 1, 2026</time>
+</article>
+```
+
+2. **Add schema.org markup:**
+```html
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Ultimate SEO Guide",
+  "datePublished": "2026-02-09",
+  "dateModified": "2026-03-01"
+}
+</script>
+```
+
+3. **Update content regularly:**
+- Refresh statistics and examples
+- Add new sections
+- Remove outdated information
+- Update screenshots
+- Revise for current best practices
+
+4. **Content audit schedule:**
+- Blog posts: Review every 6-12 months
+- Documentation: Review every 3-6 months
+- Product pages: Review quarterly
+- Time-sensitive content: Review monthly
+</Accordion>
+
+## Quick Reference
+
+| Rule | Target | Recommendation |
+|------|--------|----------------|
+| Word count | 300+ words | 500-2000 words depending on page type |
+| Keyword density | 2-3% | Use naturally, don't force |
+| Paragraph length | 3-4 sentences | Keep scannable |
+| Heading levels | Logical H1-H6 | No skipped levels |
+| Internal links | 2-5 per page | Link to related content |
+| Reading level | 8th-10th grade | Use simple language |
+
+## Related Pages
+
+<CardGroup cols={2}>
+  <Card title="Core SEO Rules" icon="magnifying-glass" href="/reference/rules/core-seo">
+    Title tags, meta descriptions, and on-page SEO
+  </Card>
+  <Card title="Accessibility Rules" icon="universal-access" href="/reference/rules/accessibility">
+    Heading hierarchy, alt text, and semantic HTML
+  </Card>
+  <Card title="Technical SEO" icon="gear" href="/reference/rules/technical-seo">
+    Sitemaps, robots.txt, and crawlability
+  </Card>
+  <Card title="Running Audits" icon="play" href="/auditing/running-audits">
+    Learn how to run content audits
+  </Card>
+</CardGroup>

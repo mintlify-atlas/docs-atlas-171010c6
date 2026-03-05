@@ -1,0 +1,387 @@
+---
+title: "Technical SEO Rules"
+description: "Reference guide for technical SEO audit rules including sitemaps, robots.txt, redirects, and URL structure"
+---
+
+## Overview
+
+Technical SEO rules ensure search engines can crawl, index, and understand your website properly. These rules cover infrastructure, crawlability, and server configuration.
+
+## Sitemap Rules
+
+### Rule: `crawl/sitemap-valid`
+
+**What it checks:**
+- XML sitemap exists and is accessible
+- Valid XML format
+- URLs are absolute (not relative)
+- No errors in sitemap structure
+- Sitemap is discoverable in robots.txt
+
+**Why it matters:**
+Sitemaps help search engines discover all your pages, especially new or deep content that might not be easily found through normal crawling.
+
+<Accordion title="Common Issues & Fixes">
+**Issue: 8 sitemaps return unknown format errors**
+
+```bash
+# ❌ Bad: Multiple broken sitemaps
+/sitemap.xml → Unknown format error
+/sitemap_index.xml → Unknown format error
+/sitemap-index.xml → Unknown format error
+/sitemaps.xml → Unknown format error
+```
+
+**Fix:**
+1. Generate a valid XML sitemap
+2. Serve it at `/sitemap.xml` only
+3. Remove or redirect all other sitemap URLs
+4. Submit to Google Search Console
+
+```xml
+<!-- ✅ Good: Valid XML sitemap -->
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://example.com/</loc>
+    <lastmod>2026-02-09</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://example.com/about</loc>
+    <lastmod>2026-02-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+</urlset>
+```
+</Accordion>
+
+<Note>
+For large sites (>50,000 URLs), use a sitemap index file that references multiple smaller sitemaps.
+</Note>
+
+### Rule: `crawl/sitemap-size`
+
+**What it checks:**
+- Sitemap file size under 50MB (uncompressed)
+- No more than 50,000 URLs per sitemap
+- Proper compression (gzip recommended)
+
+<Accordion title="How to Handle Large Sitemaps">
+```xml
+<!-- ✅ Good: Sitemap index for large sites -->
+<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <sitemap>
+    <loc>https://example.com/sitemap-pages.xml</loc>
+    <lastmod>2026-02-09</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://example.com/sitemap-posts.xml</loc>
+    <lastmod>2026-02-08</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://example.com/sitemap-products.xml</loc>
+    <lastmod>2026-02-07</lastmod>
+  </sitemap>
+</sitemapindex>
+```
+
+**Best practices:**
+- Split by content type (pages, posts, products)
+- Keep each sitemap under 50,000 URLs
+- Compress with gzip to reduce bandwidth
+- Update lastmod dates when content changes
+</Accordion>
+
+## Robots.txt
+
+### Rule: `crawl/robots-txt`
+
+**What it checks:**
+- robots.txt exists at `/robots.txt`
+- Valid syntax
+- Sitemap reference included
+- No accidental disallows
+
+**Why it matters:**
+robots.txt controls which parts of your site search engines can crawl. Mistakes here can accidentally block your entire site from search engines.
+
+<Accordion title="Common Issues">
+```
+# ❌ Bad: Blocking entire site
+User-agent: *
+Disallow: /
+
+# ❌ Bad: No sitemap reference
+User-agent: *
+Disallow: /admin/
+
+# ✅ Good: Proper robots.txt
+User-agent: *
+Disallow: /admin/
+Disallow: /api/
+Disallow: /private/
+Allow: /api/public/
+
+Sitemap: https://example.com/sitemap.xml
+```
+</Accordion>
+
+<Warning>
+Never use robots.txt as a security measure. It only asks bots to avoid certain areas—it doesn't enforce access control.
+</Warning>
+
+## Redirects & Status Codes
+
+### Rule: `links/redirect-chains`
+
+**What it checks:**
+- No redirect chains (A → B → C)
+- Redirects use 301 (permanent) or 302 (temporary) correctly
+- No redirect loops
+- Minimal redirect hops
+
+**Why it matters:**
+Redirect chains waste crawl budget and slow down page load times. Each redirect adds latency and can dilute PageRank.
+
+<Accordion title="Fix Redirect Chains">
+```bash
+# ❌ Bad: Redirect chain (3 hops)
+http://example.com → https://example.com → https://www.example.com → https://www.example.com/home
+
+# ✅ Good: Direct redirect (1 hop)
+http://example.com → https://www.example.com/home
+```
+
+**How to fix:**
+1. Audit all redirects with a crawler
+2. Update redirects to point directly to final destination
+3. Use 301 for permanent moves, 302 for temporary
+4. Avoid meta refresh redirects (use server-side 301/302)
+</Accordion>
+
+### Rule: `links/broken-links`
+
+**What it checks:**
+- No 404 errors on internal links
+- No 500 server errors
+- All linked resources are accessible
+
+<Accordion title="Common HTTP Status Codes">
+| Code | Meaning | Impact |
+|------|---------|--------|
+| 200 | OK | ✅ Page loads successfully |
+| 301 | Permanent Redirect | ⚠️ Should point to final URL |
+| 302 | Temporary Redirect | ⚠️ Okay for short-term moves |
+| 404 | Not Found | ❌ Broken link, bad UX |
+| 410 | Gone (Permanent) | ⚠️ Better than 404 for removed content |
+| 500 | Server Error | ❌ Critical issue, fix immediately |
+| 503 | Service Unavailable | ❌ Temporary outage |
+</Accordion>
+
+## URL Structure
+
+### Rule: `url/length`
+
+**What it checks:**
+- URLs under 100 characters (optimal)
+- No excessive parameters
+- Clean, readable structure
+
+**Why it matters:**
+Short, descriptive URLs are easier to share, remember, and rank better in search results.
+
+<Accordion title="URL Best Practices">
+```bash
+# ❌ Bad: Long, unclear URL
+https://example.com/products.php?id=12345&category=electronics&filter=new&sort=price&page=2
+
+# ✅ Good: Clean, semantic URL
+https://example.com/products/electronics/laptops
+
+# ❌ Bad: Query parameters for core content
+https://example.com/article?id=42
+
+# ✅ Good: Descriptive path
+https://example.com/blog/10-sales-automation-tips
+```
+
+**Best practices:**
+- Use hyphens (not underscores) to separate words
+- Keep URLs under 100 characters when possible
+- Use lowercase letters only
+- Include target keywords
+- Avoid special characters and spaces
+- Use semantic hierarchy: `/category/subcategory/page`
+</Accordion>
+
+### Rule: `url/parameters`
+
+**What it checks:**
+- Minimal use of query parameters for content
+- Tracking parameters don't create duplicate content
+- Proper use of canonical tags with parameters
+
+<Accordion title="Handling URL Parameters">
+**Google Search Console: URL Parameters Tool**
+
+Tell Google how to handle parameters:
+- `sort`, `filter`, `page`: Changes content → Crawl every URL
+- `utm_source`, `sessionid`: Doesn't change content → Ignore parameter
+
+**Canonical tags for duplicate parameters:**
+```html
+<!-- On: /products?sort=price&filter=new -->
+<link rel="canonical" href="https://example.com/products">
+
+<!-- On: /products?page=2 -->
+<link rel="canonical" href="https://example.com/products?page=2">
+```
+</Accordion>
+
+## Crawlability
+
+### Rule: `crawl/depth`
+
+**What it checks:**
+- Important pages are within 3 clicks of homepage
+- No orphaned pages (pages with no internal links)
+- Proper internal linking structure
+
+**Why it matters:**
+Search engines prioritize pages that are easily accessible from your homepage. Deep pages get crawled less frequently.
+
+<Accordion title="Fix Deep Page Issues">
+**Symptoms:**
+- Important pages not ranking
+- Low crawl frequency
+- Pages not appearing in search results
+
+**Solutions:**
+1. Add links from homepage to important pages
+2. Create category/hub pages that link to related content
+3. Use breadcrumbs for navigation
+4. Add internal links within content
+5. Create an HTML sitemap
+6. Fix orphaned pages (add at least one internal link)
+</Accordion>
+
+## Index Status
+
+### Rule: `crawl/indexability`
+
+**What it checks:**
+- Pages aren't blocked by robots.txt
+- No `noindex` meta tags on important pages
+- Pages are accessible to crawlers
+- No authentication walls for public content
+
+<Accordion title="Common Indexability Issues">
+```html
+<!-- ❌ Bad: Accidentally blocking important page -->
+<meta name="robots" content="noindex, nofollow">
+
+<!-- ✅ Good: Allow indexing -->
+<meta name="robots" content="index, follow">
+<!-- Or omit the tag entirely (default is index, follow) -->
+
+<!-- ✅ Good: Block admin pages only -->
+<!-- In robots.txt: -->
+User-agent: *
+Disallow: /admin/
+Disallow: /wp-admin/
+```
+
+**When to use noindex:**
+- Thank you pages
+- Search results pages
+- Filtering/sorting variants
+- Login/logout pages
+- Draft/preview content
+</Accordion>
+
+## JavaScript & Rendering
+
+### Rule: `crawl/rendering`
+
+**What it checks:**
+- Content visible without JavaScript
+- Critical content server-side rendered
+- No infinite scroll issues
+- Lazy loading implemented correctly
+
+**Why it matters:**
+While Google can execute JavaScript, server-side rendering ensures content is immediately visible to all crawlers and users.
+
+<Accordion title="Fix SPA Rendering Issues">
+**Problem: Thin content (0 words detected)**
+
+Likely a Single Page Application (SPA) rendering issue—crawlers see empty content.
+
+**Solutions:**
+1. **Server-Side Rendering (SSR)**: Render HTML on server
+2. **Static Site Generation (SSG)**: Pre-render pages at build time
+3. **Dynamic Rendering**: Serve static HTML to bots, JS to users
+4. **Prerendering Service**: Use service like Prerender.io
+
+```javascript
+// Example: Next.js SSR
+export async function getServerSideProps() {
+  const data = await fetchData();
+  return { props: { data } };
+}
+
+// Example: Next.js SSG
+export async function getStaticProps() {
+  const data = await fetchData();
+  return { props: { data }, revalidate: 3600 };
+}
+```
+</Accordion>
+
+## Canonical URL Chains
+
+### Rule: `core/canonical-chain`
+
+**What it checks:**
+- No canonical chains (Page A → Page B → Page C)
+- Canonical URLs are directly accessible
+- Self-referencing canonicals on original pages
+
+<Accordion title="Fix Canonical Chains">
+```html
+<!-- ❌ Bad: Canonical chain -->
+<!-- Page A: -->
+<link rel="canonical" href="/page-b">
+<!-- Page B: -->
+<link rel="canonical" href="/page-c">
+
+<!-- ✅ Good: Direct canonical -->
+<!-- Page A: -->
+<link rel="canonical" href="/page-c">
+<!-- Page B: -->
+<link rel="canonical" href="/page-c">
+<!-- Page C: -->
+<link rel="canonical" href="https://example.com/page-c">
+```
+</Accordion>
+
+## Related Pages
+
+<CardGroup cols={2}>
+  <Card title="Core SEO Rules" icon="magnifying-glass" href="/reference/rules/core-seo">
+    Title tags, meta descriptions, H1 headings, and Open Graph
+  </Card>
+  <Card title="Performance Rules" icon="gauge-high" href="/reference/rules/performance">
+    Page speed, compression, caching, and optimization
+  </Card>
+  <Card title="Running Audits" icon="play" href="/auditing/running-audits">
+    Learn how to run website audits and identify technical issues
+  </Card>
+  <Card title="Interpreting Results" icon="chart-line" href="/auditing/interpreting-results">
+    Understand health scores and prioritize fixes
+  </Card>
+</CardGroup>

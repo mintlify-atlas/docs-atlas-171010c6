@@ -1,0 +1,234 @@
+---
+title: Introduction
+description: Market Research toolkit for website auditing and marketing psychology
+---
+
+# Market Research Toolkit
+
+The Market Research toolkit combines powerful website auditing with marketing psychology frameworks to help you understand, optimize, and improve digital experiences.
+
+## What is the Market Research Toolkit?
+
+This toolkit provides AI agents with two specialized capabilities:
+
+1. **Website Auditing**: Comprehensive technical and marketing analysis powered by the squirrelscan CLI
+2. **Marketing Psychology**: Application of 70+ mental models and behavioral science principles to marketing decisions
+
+Together, these capabilities enable deep analysis of websites from both technical and psychological perspectives, providing actionable insights for improvement.
+
+## Key Capabilities
+
+### Website Auditing (230+ Rules)
+
+The toolkit audits websites across 21 categories with over 230 automated rules:
+
+<AccordionGroup>
+  <Accordion title="SEO & Discoverability">
+    - Meta tags, titles, and descriptions
+    - Canonical URLs and Open Graph tags
+    - Keyword optimization (without stuffing)
+    - URL structure and naming conventions
+    - Crawlability and robots.txt configuration
+    - Sitemap.xml validation
+    - Schema.org markup and structured data
+    - E-E-A-T (Expertise, Experience, Authority, Trustworthiness)
+  </Accordion>
+
+  <Accordion title="Technical Performance">
+    - Broken links (internal and external)
+    - Redirect chains and loops
+    - Page speed and load time
+    - Mobile-friendliness and responsive design
+    - Resource usage and caching
+    - Image optimization (size, format, compression)
+  </Accordion>
+
+  <Accordion title="Content Quality">
+    - Heading structure and hierarchy
+    - Content organization and readability
+    - Image alt text completeness
+    - Video accessibility and VideoObject schema
+  </Accordion>
+
+  <Accordion title="Security & Compliance">
+    - Leaked secrets detection
+    - HTTPS usage and mixed content warnings
+    - Security headers
+    - Legal compliance (privacy policies, terms of service)
+  </Accordion>
+
+  <Accordion title="User Experience">
+    - Accessibility (WCAG compliance)
+    - Color contrast and keyboard navigation
+    - Form validation and error handling
+    - User flow optimization
+    - Touch-friendly elements for mobile
+  </Accordion>
+
+  <Accordion title="Social & Local">
+    - Open Graph and Twitter Card validation
+    - Social media schema and snippets
+    - NAP (Name, Address, Phone) consistency
+    - Geo metadata for local SEO
+  </Accordion>
+</AccordionGroup>
+
+Each audit provides:
+- **Overall health score** (0-100) with letter grades
+- **Category breakdowns** for focused improvements
+- **Specific issues** with affected URLs
+- **Severity levels** (error, warning, notice) and impact rankings (1-10)
+- **Actionable recommendations** for fixing issues
+
+### Marketing Psychology (70+ Mental Models)
+
+The toolkit applies proven psychological principles to marketing decisions:
+
+<CardGroup cols={2}>
+  <Card title="Foundational Thinking" icon="brain">
+    First Principles, Jobs to Be Done, Circle of Competence, Inversion, Occam's Razor, Pareto Principle, Theory of Constraints, Opportunity Cost, and more
+  </Card>
+
+  <Card title="Buyer Psychology" icon="users">
+    Mere Exposure Effect, Availability Heuristic, Confirmation Bias, Mimetic Desire, Endowment Effect, IKEA Effect, Present Bias, Status-Quo Bias, and more
+  </Card>
+
+  <Card title="Persuasion Principles" icon="magnet">
+    Reciprocity, Commitment & Consistency, Authority Bias, Social Proof, Scarcity/Urgency, Loss Aversion, Anchoring, Framing Effect, and more
+  </Card>
+
+  <Card title="Pricing Psychology" icon="dollar-sign">
+    Charm Pricing, Left-Digit Effect, Rule of 100, Good-Better-Best, Mental Accounting, Price Relativity, and more
+  </Card>
+</CardGroup>
+
+## Who Should Use This Toolkit?
+
+The Market Research toolkit is designed for:
+
+### Marketers
+- Audit marketing websites for SEO and conversion optimization
+- Apply psychological principles to messaging and positioning
+- Improve landing pages using behavioral science
+- Understand why customers buy and how to influence decisions ethically
+
+### Developers
+- Identify and fix technical SEO issues
+- Validate accessibility and mobile-friendliness
+- Debug broken links and redirect chains
+- Ensure security best practices
+- Optimize page performance and resource loading
+
+### Product Teams
+- Analyze competitor websites
+- Apply Jobs to Be Done framework to product positioning
+- Reduce friction in user onboarding
+- Design better pricing strategies
+- Build features that leverage psychological principles
+
+### Content Creators
+- Fix content structure and heading hierarchy
+- Add missing alt text and meta descriptions
+- Improve E-E-A-T signals
+- Optimize for search engines and social sharing
+
+## Core Components
+
+### 1. squirrelscan CLI
+
+The `squirrel` command-line tool provides the auditing engine:
+
+- **Cross-platform**: Available for macOS, Windows, and Linux
+- **Browser emulation**: Renders pages like real browsers and search crawlers
+- **Local database**: Caches results for fast re-analysis and regression tracking
+- **Flexible output**: Console, LLM-optimized, JSON, HTML, Markdown, and more
+- **Configurable coverage**: Quick, surface, or full audits depending on your needs
+
+<Info>
+The CLI is designed to work seamlessly with AI agents, providing structured, token-efficient output formats optimized for LLM consumption.
+</Info>
+
+### 2. AI Agent Skills
+
+Two specialized agent skills provide high-level capabilities:
+
+**audit-website skill**: Handles the complete audit workflow:
+- Installation and setup of squirrel CLI
+- Running audits with appropriate coverage modes
+- Interpreting results and prioritizing fixes
+- Parallelizing fixes across multiple agents for speed
+- Iterating until health scores reach target levels (typically 85-95+)
+- Regression testing to detect new issues
+
+**marketing-psychology skill**: Applies mental models to marketing:
+- Identifies relevant psychological principles for specific situations
+- Explains the science behind buyer behavior
+- Provides concrete marketing applications
+- Ensures ethical implementation of persuasion techniques
+- Tailors recommendations to product context when available
+
+### 3. Mental Models Library
+
+The toolkit includes 70+ mental models organized into categories:
+
+- **Foundational Thinking Models**: Strategy, problem-solving, and decision frameworks
+- **Understanding Buyers**: Cognitive biases and behavioral patterns
+- **Influencing Behavior**: Ethical persuasion and behavior change
+- **Pricing Psychology**: How people perceive and respond to prices
+- **Design & Delivery**: Creating effective marketing systems
+- **Growth & Scaling**: Models for sustainable, compounding growth
+
+## How It Works Together
+
+The power of this toolkit comes from combining technical auditing with psychological insights:
+
+1. **Audit** a website to identify technical issues, broken user flows, and optimization opportunities
+2. **Apply psychology** to understand why issues matter and how to fix them effectively
+3. **Implement fixes** guided by both technical best practices and behavioral science
+4. **Re-audit** to verify improvements and catch any regressions
+5. **Iterate** until the site achieves optimal health and conversion performance
+
+<Note>
+The toolkit emphasizes **ethical application** of psychological principles. All persuasion techniques should be used to genuinely help customers make better decisions, not to manipulate or deceive.
+</Note>
+
+## Example Workflow
+
+Here's how the toolkit might be used to improve a landing page:
+
+```
+1. Run website audit
+   → Discovers: slow load time, missing H1, weak meta description, 
+                no social proof, broken mobile layout
+
+2. Apply psychology frameworks
+   → Identifies: High activation energy (friction), no social proof,
+                missing scarcity/urgency, unclear value proposition
+
+3. Implement fixes
+   → Technical: Fix mobile CSS, optimize images, add H1, expand meta
+   → Psychological: Add testimonials (social proof), simplify form (reduce friction),
+                   add "limited spots" (scarcity), clarify outcome (Jobs to Be Done)
+
+4. Re-audit
+   → Score improved from 68 (D) to 92 (A)
+   → All critical issues resolved
+
+5. Monitor conversions
+   → Track whether combined technical + psychological improvements 
+     drive better results
+```
+
+## Getting Started
+
+Ready to audit your first website? Continue to the [Quickstart Guide](/quickstart) to install the toolkit and run your first audit.
+
+## Additional Resources
+
+- **squirrelscan Documentation**: [docs.squirrelscan.com](https://docs.squirrelscan.com)
+- **Rule Reference**: Look up any audit rule at `https://docs.squirrelscan.com/rules/{category}/{rule-id}`
+- **squirrelscan Website**: [squirrelscan.com](https://squirrelscan.com)
+
+<Warning>
+Always audit **live websites** when possible. Only production environments provide true representation of performance, rendering, and real user experience. Local development servers may not reflect actual issues.
+</Warning>

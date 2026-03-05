@@ -1,80 +1,468 @@
 ---
-title: "Quickstart"
-description: "Start building awesome documentation in minutes"
+title: Quickstart Guide
+description: Get started with the Market Research toolkit in minutes
 ---
 
-## Get started in three steps
+# Quickstart Guide
 
-Get your documentation site running locally and make your first customization.
+This guide will help you install the Market Research toolkit and run your first website audit in under 5 minutes.
 
-### Step 1: Set up your local environment
+## Prerequisites
 
-<AccordionGroup>
-  <Accordion icon="copy" title="Clone your docs locally">
-    During the onboarding process, you created a GitHub repository with your docs content if you didn't already have one. You can find a link to this repository in your [dashboard](https://dashboard.mintlify.com).
+The toolkit works on:
+- **macOS** (Intel and Apple Silicon)
+- **Linux** (x64 and ARM64)
+- **Windows** (x64)
+
+No other dependencies required. The squirrel CLI is a self-contained binary.
+
+<Steps>
+  <Step title="Install squirrel CLI">
+    The squirrelscan CLI (`squirrel`) is the auditing engine. Install it based on your platform:
+
+    ### macOS & Linux
+
+    ```bash
+    curl -fsSL https://squirrelscan.com/install | bash
+    ```
+
+    This will:
+    - Download the latest release binary for your platform
+    - Install to `~/.local/share/squirrel/releases/{version}/`
+    - Create a symlink at `~/.local/bin/squirrel`
+    - Initialize settings at `~/.squirrel/settings.json`
+
+    <Note>
+    If `~/.local/bin` is not in your PATH, add it to your shell configuration:
     
-    To clone the repository locally so that you can make and preview changes to your docs, follow the [Cloning a repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) guide in the GitHub docs.
-  </Accordion>
-  <Accordion icon="rectangle-terminal" title="Start the preview server">
-    1. Install the Mintlify CLI: `npm i -g mint`
-    2. Navigate to your docs directory and run: `mint dev`
-    3. Open `http://localhost:3000` to see your docs live!
+    ```bash
+    export PATH="$HOME/.local/bin:$PATH"
+    ```
     
-    <Tip>Your preview updates automatically as you edit files.</Tip>
-  </Accordion>
-</AccordionGroup>
+    Then reload your shell: `source ~/.bashrc` (or `~/.zshrc` for zsh)
+    </Note>
 
-### Step 2: Deploy your changes
+    ### Windows
 
-<AccordionGroup>
-  <Accordion icon="github" title="Install our GitHub app">
-    Install the Mintlify GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app).
-    
-    Our GitHub app automatically deploys your changes to your docs site, so you don't need to manage deployments yourself.
-</Accordion>
-<Accordion icon="palette" title="Update your site name and colors">
-    For a first change, let's update the name and colors of your docs site.
+    Install using PowerShell (run as Administrator):
 
-    1. Open `docs.json` in your editor.
-    2. Change the `"name"` field to your project name.
-    3. Update the `"colors"` to match your brand.
-    4. Save and see your changes instantly at `http://localhost:3000`.
+    ```powershell
+    irm https://squirrelscan.com/install.ps1 | iex
+    ```
 
-    <Tip>Try changing the primary color to see an immediate difference!</Tip>
-  </Accordion>
-</AccordionGroup>
+    This will:
+    - Download the latest release binary
+    - Install to `%LOCALAPPDATA%\squirrel\`
+    - Add squirrel to your PATH
 
-### Step 3: Go live
+    <Info>
+    If using Command Prompt, you may need to restart your terminal for PATH changes to take effect.
+    </Info>
 
-<Accordion icon="rocket" title="Publish your docs">
-  1. Commit and push your changes.
-  2. Your docs will update and be live in moments!
-</Accordion>
+    ### Verify Installation
 
-## Next steps
+    Check that squirrel is installed and accessible:
 
-Now that you have your docs running, explore these key features:
+    ```bash
+    squirrel --version
+    ```
 
-<CardGroup cols={2}>
+    You should see output like:
+    ```
+    squirrel v1.18.0
+    ```
 
-<Card title="Write Content" icon="pen-to-square" href="/essentials/markdown">
-  Learn MDX syntax and start writing your documentation.
-</Card>
+    <Warning>
+    If you get "command not found", the installation directory is not in your PATH. Follow the PATH setup instructions above.
+    </Warning>
+  </Step>
 
-<Card title="Customize style" icon="palette" href="/essentials/settings">
-  Make your docs match your brand perfectly.
-</Card>
+  <Step title="Run your first website audit">
+    Now let's audit a website. We'll use the `audit` command, which handles crawling, analysis, and reporting in one step.
 
-<Card title="Add code examples" icon="square-code" href="/essentials/code">
-  Include syntax-highlighted code blocks.
-</Card>
+    ### Initialize Project
 
-<Card title="API documentation" icon="code" href="/api-reference/introduction">
-  Auto-generate API docs from OpenAPI specs.
-</Card>
+    First, create a project configuration:
 
-</CardGroup>
+    ```bash
+    squirrel init -n my-project
+    ```
 
-<Note>
-  **Need help?** See our [full documentation](https://mintlify.com/docs) or join our [community](https://mintlify.com/community).
-</Note>
+    This creates a `squirrel.toml` configuration file in your current directory and sets up a local database at `~/.squirrel/projects/my-project`.
+
+    <Info>
+    The project name groups related audits together. If you're auditing multiple versions of the same site (dev, staging, production), use the same project name so you can compare results.
+    </Info>
+
+    ### Run Your First Audit
+
+    Let's start with a **surface audit** — this intelligently samples your site by crawling one page per URL pattern:
+
+    ```bash
+    squirrel audit https://example.com --format llm
+    ```
+
+    <Note>
+    Replace `example.com` with your actual website URL. Always include the protocol (`https://` or `http://`).
+    </Note>
+
+    The audit will:
+    1. **Crawl** up to 100 pages (surface mode default)
+    2. **Analyze** each page against 230+ audit rules
+    3. **Check** external links for availability
+    4. **Generate** an LLM-optimized report
+
+    This typically takes 30-90 seconds depending on site size.
+
+    ### Understanding Coverage Modes
+
+    The toolkit offers three coverage modes:
+
+    | Mode | Pages | Behavior | Use Case |
+    |------|-------|----------|----------|
+    | `quick` | 25 | Seed + sitemaps only, no link discovery | Fast health checks, CI pipelines |
+    | `surface` | 100 | One sample per URL pattern (default) | General audits |
+    | `full` | 500 | Crawl everything up to limit | Deep analysis, pre-launch checks |
+
+    **Surface mode** is smart: it detects patterns like `/blog/{slug}` or `/products/{id}` and only crawls one example of each pattern. This makes it efficient for sites with many similar pages.
+
+    <CodeGroup>
+    ```bash Quick Audit (25 pages)
+    squirrel audit https://example.com -C quick --format llm
+    ```
+
+    ```bash Surface Audit (100 pages, default)
+    squirrel audit https://example.com --format llm
+    ```
+
+    ```bash Full Audit (500 pages)
+    squirrel audit https://example.com -C full --format llm
+    ```
+
+    ```bash Custom Page Limit
+    squirrel audit https://example.com -C surface -m 200 --format llm
+    ```
+    </CodeGroup>
+
+    ### Why --format llm?
+
+    The `llm` format is a compact, structured output optimized for AI consumption:
+    - **40% smaller** than verbose XML formats
+    - **Grouped by category** for easier navigation
+    - **Includes recommendations** with specific fix suggestions
+    - **Lists broken links** separately for quick triage
+
+    Other formats are available (`console`, `json`, `html`, `markdown`), but `llm` is recommended when working with AI agents.
+  </Step>
+
+  <Step title="Interpret results">
+    The audit output includes several key sections:
+
+    ### Health Score
+
+    Your site gets an overall score from 0-100 with a letter grade:
+
+    | Score | Grade | Status |
+    |-------|-------|--------|
+    | 95-100 | A+ | Excellent |
+    | 90-94 | A | Very Good |
+    | 85-89 | B+ | Good |
+    | 80-84 | B | Acceptable |
+    | 70-79 | C | Needs Improvement |
+    | 60-69 | D | Poor |
+    | 0-59 | F | Critical Issues |
+
+    <Info>
+    A **complete and fixed** site should score **95+** (Grade A) with `--coverage full`.
+    </Info>
+
+    ### Category Breakdowns
+
+    The score is broken down by category:
+    - **Core SEO**: Meta tags, titles, descriptions, structured data
+    - **Technical SEO**: Crawlability, URLs, redirects, canonicals
+    - **Content**: Headings, images, readability, structure
+    - **Security**: HTTPS, leaked secrets, security headers
+    - **Performance**: Page speed, resource usage, mobile-friendliness
+    - **Accessibility**: Alt text, color contrast, keyboard navigation
+
+    ### Issue Severity
+
+    Each issue has a severity level:
+    - **Error**: Critical problems that should be fixed immediately
+    - **Warning**: Important issues that impact quality
+    - **Notice**: Minor issues or suggestions for improvement
+
+    Issues also have a **rank** (1-10) indicating their impact on overall health.
+
+    ### Affected URLs
+
+    For each issue, you'll see which pages are affected:
+
+    ```xml
+    <issue>
+      <rule>missing-h1</rule>
+      <severity>error</severity>
+      <rank>8</rank>
+      <count>12</count>
+      <sample_urls>
+        <url>/about</url>
+        <url>/contact</url>
+        <url>/blog/post-1</url>
+      </sample_urls>
+    </issue>
+    ```
+
+    ### Broken Links
+
+    The audit separately lists broken links found:
+    - **Internal broken links**: Links to pages on your site that don't exist
+    - **External broken links**: Links to third-party sites that return errors
+
+    ### Recommendations
+
+    Each issue includes actionable recommendations:
+    - **What** the problem is
+    - **Why** it matters
+    - **How** to fix it
+
+    ### Rule Documentation
+
+    For detailed information about any rule, visit:
+    ```
+    https://docs.squirrelscan.com/rules/{category}/{rule-id}
+    ```
+
+    For example:
+    ```
+    https://docs.squirrelscan.com/rules/links/external-links
+    ```
+  </Step>
+
+  <Step title="Apply psychology frameworks">
+    Now that you've identified technical issues, apply marketing psychology to understand and prioritize fixes.
+
+    ### Common Issue → Psychology Mapping
+
+    | Technical Issue | Psychology Principle | Why It Matters |
+    |----------------|---------------------|----------------|
+    | Slow page load | **Activation Energy** | High friction prevents action. Users abandon slow sites. |
+    | No testimonials | **Social Proof** | People trust what others validate. Missing social proof reduces conversions. |
+    | Complex form | **Hick's Law** | More fields = slower decisions = more abandonment. |
+    | Weak CTA | **BJ Fogg Model** | Need clear prompt. "Click here" < "Start your free trial" |
+    | No urgency | **Loss Aversion** | People need a reason to act now vs. later. |
+    | Poor mobile UX | **Opportunity Cost** | Mobile users are majority traffic. Bad mobile = lost customers. |
+    | Missing meta | **Mere Exposure Effect** | Search/social snippets are first touchpoints. Bad snippet = fewer clicks. |
+
+    ### Prioritization Framework
+
+    When deciding what to fix first, consider:
+
+    1. **Severity × Traffic**: Fix errors on high-traffic pages first
+    2. **Effort × Impact**: Quick wins (low effort, high impact) before large projects
+    3. **Conversion pages**: Prioritize landing pages, pricing, signup flows
+    4. **Compounding value**: SEO and content fixes compound over time — start early
+
+    ### Example: Applying Mental Models
+
+    Let's say your audit found:
+    - Missing H1 on 12 pages
+    - No meta descriptions on 8 pages
+    - Complex 15-field signup form
+    - No customer testimonials
+    - HTTP links (not HTTPS)
+
+    **Apply psychology:**
+
+    <AccordionGroup>
+      <Accordion title="Missing H1 (Jobs to Be Done)">
+        H1 tells users what job this page does. Without it, users don't know if they're in the right place. **Fix**: Add clear, outcome-focused H1s that describe the job to be done.
+      </Accordion>
+
+      <Accordion title="No meta descriptions (Availability Heuristic)">
+        Search results are first impressions. Poor snippet = fewer clicks. **Fix**: Write compelling meta descriptions that make success feel achievable.
+      </Accordion>
+
+      <Accordion title="Complex form (Hick's Law + Activation Energy)">
+        15 fields = high friction = abandonment. **Fix**: Reduce to 3-5 essential fields. Use progressive disclosure for optional data.
+      </Accordion>
+
+      <Accordion title="No testimonials (Social Proof + Authority)">
+        Missing social validation. **Fix**: Add 3-5 testimonials with photos, names, and specific results. Include logos of known companies if possible.
+      </Accordion>
+
+      <Accordion title="HTTP links (Security + Trust)">
+        Mixed content warnings reduce trust. **Fix**: Update all links to HTTPS. This is also important for SEO rankings.
+      </Accordion>
+    </AccordionGroup>
+
+    ### Using the Marketing Psychology Skill
+
+    When working with AI agents, you can invoke the marketing psychology skill directly:
+
+    ```
+    "Apply marketing psychology principles to this landing page audit.
+    Focus on conversion optimization using mental models."
+    ```
+
+    The agent will:
+    - Identify relevant mental models for your specific situation
+    - Explain the psychology behind buyer behavior
+    - Provide concrete implementation recommendations
+    - Ensure ethical application of persuasion techniques
+  </Step>
+
+  <Step title="Next steps">
+    Congratulations! You've completed your first audit and learned how to interpret results through a psychological lens.
+
+    ### Implement Fixes
+
+    Now it's time to fix the issues:
+
+    1. **Start with errors**: Fix critical issues first (missing H1s, broken links, security)
+    2. **Parallelize content fixes**: For issues affecting many files (alt text, headings), fix multiple files simultaneously
+    3. **Test changes**: Deploy to staging/preview before production
+    4. **Re-audit**: Run another audit to verify improvements
+
+    ```bash
+    # After deploying fixes, re-audit
+    squirrel audit https://example.com --refresh --format llm
+    ```
+
+    The `--refresh` flag ignores cached data and fetches everything fresh.
+
+    ### Compare Before & After
+
+    To see what changed between audits:
+
+    ```bash
+    # List recent audits to get IDs
+    squirrel report --list
+
+    # Compare current state against baseline
+    squirrel report --diff <baseline-audit-id> --format llm
+
+    # Or compare against previous audit of same domain
+    squirrel report --regression-since example.com --format llm
+    ```
+
+    Diff mode highlights:
+    - **New issues** that appeared
+    - **Fixed issues** that were resolved
+    - **Changed scores** by category
+
+    ### Iteration Loop
+
+    Website optimization is iterative:
+
+    ```
+    Audit → Prioritize → Fix → Test → Re-audit → Repeat
+    ```
+
+    **Keep iterating until:**
+    - Score reaches 95+ (Grade A)
+    - All errors are resolved
+    - All warnings are fixed or documented as requiring human review
+    - Full coverage audit confirms comprehensive health
+
+    <Note>
+    Don't stop at "good enough." A score of 95+ with full coverage is the gold standard for a properly optimized site.
+    </Note>
+
+    ### Advanced Options
+
+    <CodeGroup>
+    ```bash Resume Interrupted Crawl
+    squirrel audit https://example.com --resume
+    ```
+
+    ```bash Verbose Output
+    squirrel audit https://example.com --verbose --format llm
+    ```
+
+    ```bash Export to File
+    squirrel audit https://example.com --format llm -o report.txt
+    ```
+
+    ```bash Different Formats
+    # HTML report for stakeholders
+    squirrel report <audit-id> --format html -o report.html
+
+    # JSON for programmatic use
+    squirrel report <audit-id> --format json -o report.json
+
+    # Markdown for documentation
+    squirrel report <audit-id> --format markdown -o report.md
+    ```
+    </CodeGroup>
+
+    ### Continuous Monitoring
+
+    Integrate audits into your workflow:
+
+    **CI/CD Integration**: Run quick audits on preview deployments
+    ```bash
+    squirrel audit $PREVIEW_URL -C quick --format llm
+    ```
+
+    **Scheduled Audits**: Run weekly surface audits to catch regressions
+    ```bash
+    # Add to cron or CI schedule
+    squirrel audit https://example.com --format llm --output weekly-audit.txt
+    ```
+
+    **Pre-Launch Checks**: Run full audits before major releases
+    ```bash
+    squirrel audit https://staging.example.com -C full --format llm
+    ```
+
+    ### Learn More
+
+    Now that you've mastered the basics, explore:
+
+    - **Rule Reference**: [docs.squirrelscan.com](https://docs.squirrelscan.com) — Learn about all 230+ audit rules
+    - **Marketing Psychology**: Review the 70+ mental models in the toolkit
+    - **Configuration**: Customize audit behavior with `squirrel.toml`
+    - **CLI Reference**: Run `squirrel --help` for complete command documentation
+
+    ### Getting Help
+
+    If you encounter issues:
+
+    ```bash
+    # Run health checks
+    squirrel self doctor
+
+    # Send feedback to squirrelscan team
+    squirrel feedback
+
+    # Check version
+    squirrel --version
+
+    # Update to latest version
+    squirrel self update
+    ```
+
+    <Warning>
+    **Common Issues:**
+    - **Command not found**: Ensure `~/.local/bin` (macOS/Linux) or `%LOCALAPPDATA%\squirrel` (Windows) is in your PATH
+    - **Permission denied**: Run `chmod +x ~/.local/bin/squirrel` (macOS/Linux)
+    - **Invalid URL**: Always include protocol: `https://example.com` not `example.com`
+    </Warning>
+  </Step>
+</Steps>
+
+## What's Next?
+
+You're now ready to audit websites, apply psychological principles, and optimize for both technical performance and conversion effectiveness.
+
+**Remember:**
+- Always audit **live websites** for accurate results
+- Use **surface mode** for general audits, **full mode** for comprehensive checks
+- **Iterate** until scores reach 95+ with full coverage
+- **Apply psychology** to understand why fixes matter and how to prioritize
+- **Re-audit frequently** to catch regressions
+
+<Info>
+The Market Research toolkit is designed to work seamlessly with AI agents. When requesting audits, agents will automatically handle installation, configuration, execution, fix implementation, and iteration.
+</Info>

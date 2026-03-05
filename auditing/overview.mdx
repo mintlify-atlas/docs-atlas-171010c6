@@ -1,0 +1,332 @@
+---
+title: 'Website auditing overview'
+description: 'Comprehensive website auditing with 230+ rules across 21 categories including SEO, performance, security, and accessibility.'
+keywords: ['website audit', 'SEO audit', 'squirrelscan', 'technical SEO', 'performance', 'security']
+icon: 'magnifying-glass-chart'
+---
+
+# Website auditing overview
+
+The Market Research toolkit includes powerful website auditing capabilities powered by **squirrelscan** - a comprehensive tool that analyzes websites against **230+ rules** across **21 categories**.
+
+<Info>
+  Website audits help you discover SEO issues, technical problems, performance bottlenecks, security vulnerabilities, accessibility concerns, and content quality issues.
+</Info>
+
+## What squirrelscan does
+
+squirrelscan provides extensive website auditing by emulating a browser and search crawler to analyze your website's structure and content.
+
+<Columns cols={3}>
+  <Card title="230+ rules" icon="list-check" color="#3B82F6">
+    Comprehensive ruleset covering every aspect of website health
+  </Card>
+  <Card title="21 categories" icon="grid" color="#8B5CF6">
+    Organized into logical groups from SEO to security
+  </Card>
+  <Card title="Multiple formats" icon="file-export" color="#22C55E">
+    Output as LLM, console, JSON, HTML, or markdown
+  </Card>
+</Columns>
+
+### Audit categories
+
+The audit engine checks your website across these key areas:
+
+<AccordionGroup>
+  <Accordion title="SEO & Content" icon="magnifying-glass" defaultOpen>
+    - **Core SEO**: Meta tags, titles, descriptions, canonical URLs
+    - **Technical SEO**: Sitemaps, robots.txt, structured data
+    - **Content**: Heading structure, content analysis, keyword optimization
+    - **E-E-A-T**: Expertise, Experience, Authority, Trustworthiness signals
+  </Accordion>
+  
+  <Accordion title="Technical & Performance" icon="gauge-high">
+    - **Performance**: Page load time, resource usage, caching
+    - **Crawlability**: Search engine accessibility, indexation
+    - **URL Structure**: Clean URLs, proper formatting, keywords
+    - **Mobile**: Responsive design, touch-friendly elements
+  </Accordion>
+  
+  <Accordion title="Security & Legal" icon="shield-check">
+    - **Security**: HTTPS usage, security headers, leaked secrets, mixed content
+    - **Legal**: Privacy policies, terms of service, compliance
+  </Accordion>
+  
+  <Accordion title="Media & Social" icon="images">
+    - **Images**: Alt text, optimization, formats, sizing
+    - **Video**: VideoObject schema, accessibility
+    - **Social Media**: Open Graph, Twitter Cards, schema validation
+  </Accordion>
+  
+  <Accordion title="Links & Structure" icon="link">
+    - **Links**: Broken internal and external links, redirect chains
+    - **Accessibility**: Color contrast, keyboard navigation, ARIA labels
+    - **Local SEO**: NAP consistency, geo metadata
+  </Accordion>
+</AccordionGroup>
+
+## How it works
+
+The audit process follows a clear three-stage workflow:
+
+<Steps>
+  <Step title="Crawl the website">
+    Discovers and fetches pages starting from the base URL. The crawler follows internal links and respects robots.txt rules.
+    
+    <CodeGroup>
+    ```bash Quick scan
+    squirrel audit https://example.com --coverage quick
+    ```
+    
+    ```bash Surface scan (default)
+    squirrel audit https://example.com
+    ```
+    
+    ```bash Full scan
+    squirrel audit https://example.com --coverage full
+    ```
+    </CodeGroup>
+  </Step>
+  
+  <Step title="Analyze against rules">
+    Runs 230+ audit rules on each discovered page, checking for:
+    - Missing or incorrect meta tags
+    - Broken links and redirect chains
+    - Performance issues and slow load times
+    - Security vulnerabilities
+    - Accessibility problems
+    - Content quality issues
+  </Step>
+  
+  <Step title="Generate report">
+    Creates a comprehensive report with:
+    - **Overall health score** (0-100)
+    - **Category breakdowns** with individual scores
+    - **Issue listings** with affected URLs
+    - **Severity levels** (error, warning, notice)
+    - **Actionable recommendations** for fixes
+    
+    <Tip>
+      Use `--format llm` for AI-optimized output that's 40% more compact than verbose XML.
+    </Tip>
+  </Step>
+</Steps>
+
+## Output formats
+
+Generate reports in multiple formats to suit different needs:
+
+<Tabs>
+  <Tab title="LLM" icon="robot">
+    **Recommended for AI agents**. Compact XML/text hybrid optimized for token efficiency.
+    
+    ```bash
+    squirrel audit https://example.com --format llm
+    ```
+    
+    Includes:
+    - Overall health score and key metrics
+    - Issues grouped by category
+    - Broken links listing
+    - Prioritized recommendations
+  </Tab>
+  
+  <Tab title="Console" icon="terminal">
+    **Human-readable terminal output** with colored formatting and progress indicators. This is the default format.
+    
+    ```bash
+    squirrel audit https://example.com
+    ```
+  </Tab>
+  
+  <Tab title="JSON" icon="brackets-curly">
+    **Machine-readable structured data** for integration with other tools.
+    
+    ```bash
+    squirrel audit https://example.com --format json -o report.json
+    ```
+  </Tab>
+  
+  <Tab title="HTML" icon="file-code">
+    **Interactive web report** with sortable tables and filtering.
+    
+    ```bash
+    squirrel audit https://example.com --format html -o report.html
+    ```
+  </Tab>
+  
+  <Tab title="Markdown" icon="markdown">
+    **Documentation-friendly format** for including in docs or wikis.
+    
+    ```bash
+    squirrel audit https://example.com --format markdown -o report.md
+    ```
+  </Tab>
+</Tabs>
+
+## Coverage modes
+
+Choose the right scan depth based on your needs:
+
+<CardGroup cols={3}>
+  <Card title="Quick" icon="bolt" color="#F59E0B">
+    **25 pages** - Seed URLs + sitemaps only
+    
+    Perfect for:
+    - CI/CD pipeline checks
+    - Fast health monitoring
+    - Daily status checks
+    
+    ```bash
+    --coverage quick
+    ```
+  </Card>
+  
+  <Card title="Surface" icon="chart-simple" color="#3B82F6">
+    **100 pages** - Smart pattern sampling
+    
+    Perfect for:
+    - General audits (default)
+    - Template coverage
+    - Regular monitoring
+    
+    ```bash
+    --coverage surface
+    ```
+  </Card>
+  
+  <Card title="Full" icon="list" color="#8B5CF6">
+    **500 pages** - Comprehensive crawl
+    
+    Perfect for:
+    - Pre-launch audits
+    - Deep analysis
+    - Complete site health
+    
+    ```bash
+    --coverage full
+    ```
+  </Card>
+</CardGroup>
+
+<Note>
+  **Surface mode is intelligent** - it detects URL patterns like `/blog/{slug}` or `/products/{id}` and only crawls one sample per pattern. This makes it efficient for sites with many similar pages.
+</Note>
+
+## Audit results
+
+Every audit generates:
+
+<Columns cols={2}>
+  <div>
+    ### Health score
+    
+    An overall score from 0-100 indicating site health:
+    
+    - **95-100**: Grade A (Excellent)
+    - **85-94**: Grade B (Good)
+    - **70-84**: Grade C (Fair)
+    - **50-69**: Grade D (Poor)
+    - **0-49**: Grade F (Critical)
+  </div>
+  
+  <div>
+    ### Category scores
+    
+    Individual scores for each of the 21 categories:
+    
+    - Core SEO
+    - Technical SEO
+    - Performance
+    - Security
+    - Accessibility
+    - Content quality
+    - And 15 more...
+  </div>
+</Columns>
+
+### Issue severity
+
+All issues are classified by severity level:
+
+<Columns cols={3}>
+  <Card title="Error" icon="circle-exclamation" color="#EF4444">
+    Critical issues that must be fixed. Impact: High
+  </Card>
+  <Card title="Warning" icon="triangle-exclamation" color="#F59E0B">
+    Important issues that should be addressed. Impact: Medium
+  </Card>
+  <Card title="Notice" icon="circle-info" color="#3B82F6">
+    Suggestions for improvement. Impact: Low
+  </Card>
+</Columns>
+
+<Warning>
+  **Issues also have a rank (1-10)** indicating their impact on overall site health. Focus on high-rank issues first.
+</Warning>
+
+## Two-step workflow
+
+For maximum efficiency, use the two-step approach:
+
+<Steps>
+  <Step title="Run the audit">
+    Execute the audit and save results to the local database:
+    
+    ```bash
+    squirrel audit https://example.com
+    ```
+    
+    This displays console output and stores the audit with a unique ID.
+  </Step>
+  
+  <Step title="Export in desired format">
+    Later, export the same audit in any format without re-crawling:
+    
+    ```bash
+    # Get audit ID from previous run
+    squirrel report a1b2c3d4 --format llm
+    squirrel report a1b2c3d4 --format json -o report.json
+    squirrel report a1b2c3d4 --format html -o report.html
+    ```
+  </Step>
+</Steps>
+
+<Tip>
+  The audit database is stored locally in `~/.squirrel/projects/<project-name>`, allowing you to generate multiple report formats from a single crawl.
+</Tip>
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Install squirrel CLI" icon="download" href="/auditing/installation">
+    Get started with installation on Linux, Mac, or Windows
+  </Card>
+  <Card title="Run your first audit" icon="play" href="/auditing/running-audits">
+    Learn how to run audits with different coverage modes
+  </Card>
+  <Card title="Audit categories" icon="grid" href="/auditing/audit-categories">
+    Explore all 21 audit categories and rules
+  </Card>
+  <Card title="Interpret results" icon="chart-line" href="/auditing/interpreting-results">
+    Understand health scores and prioritize fixes
+  </Card>
+</CardGroup>
+
+## Resources
+
+<Columns cols={2}>
+  <Card title="squirrelscan website" icon="globe" href="https://squirrelscan.com">
+    Visit the official squirrelscan website
+  </Card>
+  <Card title="Documentation" icon="book" href="https://docs.squirrelscan.com">
+    Complete documentation including rule references
+  </Card>
+</Columns>
+
+<Info>
+  Rule documentation follows this pattern: `https://docs.squirrelscan.com/rules/{category}/{rule-id}`
+  
+  Example: https://docs.squirrelscan.com/rules/links/external-links
+</Info>
